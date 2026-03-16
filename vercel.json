@@ -5,10 +5,6 @@
       "destination": "/api/server.js"
     },
     {
-      "source": "/widget/(.*)",
-      "destination": "/api/server.js"
-    },
-    {
       "source": "/demo",
       "destination": "/api/server.js"
     },
