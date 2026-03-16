@@ -70,11 +70,12 @@
     .tiw-inp {
       width: 100%; background: #F8FAFC; border: 1px solid #E2E8F0;
       border-radius: 10px; padding: .7rem .95rem; color: #0F172A;
-      font-size: .9rem; outline: none; transition: border-color .2s;
+      font-size: .9rem; outline: none; transition: border-color .2s, box-shadow .2s;
+      border: 1.5px solid #CBD5E1;
     }
     .tiw-inp:focus { border-color: #14B8A6; }
     .tiw-inp::placeholder { color: #94A3B8; }
-    .tiw-inp::-webkit-calendar-picker-indicator { cursor: pointer; filter: contrast(10%) brightness(20%); }
+    .tiw-inp::-webkit-calendar-picker-indicator { cursor: pointer; filter: invert(0.2) sepia(1) saturate(5) hue-rotate(175deg) brightness(0.7); opacity: 0.8; }
 
     .tiw-lbl {
       display: block; color: #020617; font-size: .72rem;
