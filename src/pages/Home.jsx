@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import TravelWidget from '../components/TravelWidget'
 
 const Home = () => {
   return (
@@ -124,6 +125,8 @@ const Home = () => {
           ))}
         </div>
       </section>
+
+      <TravelWidget />
 
       <section className="bg-primary/5 dark:bg-primary/10 py-24">
         <div className="max-w-7xl mx-auto px-4 text-center mb-16">

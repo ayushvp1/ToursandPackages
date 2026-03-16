@@ -1,65 +1,69 @@
-# Tours & Packages
+# Tours & Package — Extraordinary Expeditions
 
-A modern, responsive travel and tourism web application built with React, Vite, Tailwind CSS, and Framer Motion.
+A premium, modern travel and tourism web application equipped with an AI-powered trip planner. Built with **React**, **Vite**, **Tailwind CSS**, and **Framer Motion**.
 
-## Features
+---
 
-- **Homepage with Parallax Hero**: An immersive entry point with smooth parallax effects.
-* **Tour Packages Listing**: Filterable grid of curated travel experiences.
-- **Package Details**: Comprehensive itinerary, high-quality gallery, and booking options.
-- **Booking Flow**: Streamlined multi-step booking and enquiry process.
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices.
-- **Modern UI/UX**: Clean aesthetics with smooth transitions and interactive elements.
+## 🌟 Key Features
 
-## Tech Stack
+- **Parallax Hero Experience**: Immersive, multi-layer parallax entrance.
+- **AI Trip Planner (New)**: A dynamic travel itinerary widget powered by **Groq AI** and OpenStreetMap.
+  - Generates detailed, time-mapped schedules.
+  - Real-time location detection.
+  - **Dynamic Route Maps**: Visualizes your daily path with Leaflet.js.
+- **Tour Listings**: Filterable grid of curated experiences.
+- **Responsive & Premium UI**: Clean white-themed aesthetics with smooth micro-animations.
 
-- **Frontend**: React (Vite)
-- **Styling**: Tailwind CSS
-- **Animations**: Framer Motion
-- **Icons**: Material Symbols Outlined
-- **Routing**: React Router DOM
+---
 
-## Getting Started
+## 🚀 Quick Start
 
-### Prerequisites
+### 1. Prerequisites
+- **Node.js**: v18 or higher.
+- **Groq API Key**: Get a free key at [console.groq.com](https://console.groq.com/).
 
-- Node.js (Latest LTS recommended)
-- npm or yarn
-
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   ```
-2. Navigate to the project directory:
-   ```bash
-   cd ToursandPackages
-   ```
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
-4. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-### Building for Production
-
-To create a production-ready bundle:
+### 2. Installation
 ```bash
-npm run build
+# Clone the repo
+git clone <your-repo-url>
+cd ToursandPackages
+
+# Install all dependencies
+npm install
+
+# Set up your AI Key
+# Open travel-itinerary-widget/.env and paste your key:
+GROQ_API_KEY=your_key_here
 ```
 
-The output will be in the `dist` directory.
+### 3. Run Locally (Unified Command)
+We've unified the frontend and the AI backend into one easy command:
+```bash
+npm run dev:all
+```
+- **Frontend**: http://localhost:5173
+- **AI Widget Server**: http://localhost:3001
 
-## Deployment
+---
 
-### Vercel
+## 📦 Deployment
 
-The project is ready for deployment on [Vercel](https://vercel.com). Simply link your GitHub repository to Vercel, and it will automatically handle the build process using the provided `vercel.json` for routing.
+### Vercel (Recommended)
+This project is configured for a seamless one-click deployment on Vercel.
 
-## License
+1. **Connect GitHub**: Push your code to a GitHub repo and link it to Vercel.
+2. **Environment Variables**: Add the following Secret in your Vercel Project Settings:
+   - `GROQ_API_KEY`: Your actual Groq key.
+3. **Automatic Routing**: The included `vercel.json` automatically configures the **Serverless Functions** to handle both the React SPA and the AI API.
 
-This project is for demonstration purposes. All rights reserved.
+### Project Structure
+- `/src`: React frontend components and pages.
+- `/travel-itinerary-widget`: Standalone Node.js/Express server for the AI planner.
+- `/api`: Vercel Function bridge.
+
+---
+
+## 🛠️ Tech Stack
+- **Frontend**: React, Vite, Tailwind CSS, Framer Motion.
+- **AI/Backend**: Node.js, Express, Groq (Llama 3.3), Leaflet.js (Mapping).
+- **Data**: OpenStreetMap (POIs and Geocoding).
