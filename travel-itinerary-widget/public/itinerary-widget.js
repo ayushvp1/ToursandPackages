@@ -74,6 +74,7 @@
     }
     .tiw-inp:focus { border-color: #14B8A6; }
     .tiw-inp::placeholder { color: #94A3B8; }
+    .tiw-inp::-webkit-calendar-picker-indicator { cursor: pointer; filter: contrast(10%) brightness(20%); }
 
     .tiw-lbl {
       display: block; color: #020617; font-size: .72rem;
@@ -237,11 +238,11 @@
             <div class="tiw-grid-2" style="margin-bottom:1.1rem">
               <div>
                 <label class="tiw-lbl">I Arrive At</label>
-                <input type="time" class="tiw-inp" id="tiw-arr-time" value="09:00" style="color-scheme:dark">
+                <input type="time" class="tiw-inp" id="tiw-arr-time" value="09:00">
               </div>
               <div>
                 <label class="tiw-lbl">Train Departs At</label>
-                <input type="time" class="tiw-inp" id="tiw-dep-time" value="19:00" style="color-scheme:dark">
+                <input type="time" class="tiw-inp" id="tiw-dep-time" value="19:00">
               </div>
             </div>
             <div style="margin-bottom:1.5rem">
