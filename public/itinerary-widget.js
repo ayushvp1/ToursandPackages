@@ -18,7 +18,7 @@
 
   // ── Config ──────────────────────────────────────────────────
   const script = document.currentScript;
-  const API_BASE = (script?.dataset?.apiBase || "http://localhost:3001").replace(/\/$/, "");
+  const API_BASE = (script?.dataset?.hasOwnProperty('apiBase') ? script.dataset.apiBase : "http://localhost:3001").replace(/\/$/, "");
   const TARGET_SEL = script?.dataset?.target || "#itinerary-widget";
 
   // ── Inject Styles ────────────────────────────────────────────

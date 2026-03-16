@@ -5,8 +5,8 @@ const TravelWidget = () => {
     // Only add the script if it doesn't already exist
     if (!document.getElementById('tiw-script')) {
       const isProd = window.location.hostname !== 'localhost'
-      // API is served on 3001 in dev, and at root /api in prod
-      const apiOrigin = isProd ? '' : 'http://localhost:3001'
+      // Use absolute origin in prod to avoid any path resolution issues
+      const apiOrigin = isProd ? window.location.origin : 'http://localhost:3001'
       
       const script = document.createElement('script')
       script.id = 'tiw-script'
