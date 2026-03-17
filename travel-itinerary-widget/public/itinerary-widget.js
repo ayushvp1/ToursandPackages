@@ -244,7 +244,7 @@
         <div id="tiw-hero" style="background:linear-gradient(160deg,#F8FAFC 0%,#F1F5F9 100%);padding:3rem 2rem 3.5rem;text-align:center;border-bottom:1px solid #E2E8F0;position:relative;overflow:hidden">
           <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle at 50% 0%,rgba(20,184,166,0.08),transparent 70%);pointer-events:none"></div>
           <p id="tiw-eyebrow" style="color:#14B8A6;font-size:.75rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.6rem">Your Day in</p>
-          <h2 id="tiw-city" style="font-family:'Playfair Display',serif;font-size:clamp(2rem,6vw,3.5rem);font-weight:700;color:#0F172A;margin-bottom:.6rem;line-height:1.1">—</h2>
+          <h2 id="tiw-city" style="font-family:'Playfair Display',serif;font-size:clamp(2rem,6vw,3.5rem);font-weight:700;color:#0F172A;margin-bottom:.6rem;line-height:1.1;text-transform:capitalize">—</h2>
           <p id="tiw-tagline" style="color:#334155;font-style:italic;font-size:1.1rem;margin-bottom:1.5rem;max-width:500px;margin-left:auto;margin-right:auto">—</p>
           <div id="tiw-pref-summary" style="display:flex;justify-content:center;gap:1.2rem;margin-bottom:2rem;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.15em;color:#94A3B8"></div>
           <div id="tiw-badges" style="display:flex;justify-content:center;gap:.8rem;flex-wrap:wrap;margin-bottom:1.2rem"></div>
@@ -290,10 +290,28 @@
     const orig = btn ? btn.innerHTML : "⚡ Map My Perfect Day";
     if (btn) { btn.innerHTML = "🛰️ Locating..."; btn.disabled = true; }
     try {
-      const res = await fetch("https://ipapi.co/json/").catch(() => null);
-      if (res && res.ok) {
-        const d = await res.json();
-        state.dest = d.city + (d.region ? `, ${d.region}` : "");
+      let city = null;
+      try {
+        const r1 = await fetch("https://ipapi.co/json/").then(r => r.json());
+        if(r1.city) city = r1.city + (r1.region ? `, ${r1.region}` : "");
+      } catch(e) {}
+      
+      if (!city) {
+        try {
+          const r2 = await fetch("https://ipwho.is/").then(r => r.json());
+          if(r2.city) city = r2.city + (r2.region ? `, ${r2.region}` : "");
+        } catch(e) {}
+      }
+      
+      if (!city) {
+        try {
+          const r3 = await fetch("https://get.geojs.io/v1/ip/geo.json").then(r => r.json());
+          if(r3.city) city = r3.city + (r3.region ? `, ${r3.region}` : "");
+        } catch(e) {}
+      }
+
+      if (city) {
+        state.dest = city;
       } else if (navigator.geolocation) {
         // High-precision fallback
         const pos = await new Promise((rs, rj) => navigator.geolocation.getCurrentPosition(rs, rj, {timeout:5000})).catch(() => null);
@@ -338,7 +356,8 @@
   }
 
   function renderItinerary(root, data) {
-    root.querySelector("#tiw-city").innerText = data.city;
+    const formattedCity = (data.city || state.dest || "").split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+    root.querySelector("#tiw-city").innerText = formattedCity;
     root.querySelector("#tiw-tagline").innerText = data.tagline;
     root.querySelector("#tiw-pref-summary").innerText = `${state.dietaryPreference} · ${state.activeInterests.join(" & ") || "EXPLORING"}`;
     root.querySelector("#tiw-badges").innerHTML = `
