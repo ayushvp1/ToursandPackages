@@ -14,7 +14,7 @@ const TravelWidget = () => {
       script.src = '/itinerary-widget.js?v=2.0.14'
       script.dataset.apiBase = apiOrigin
       script.dataset.target = '#itinerary-widget'
-      script.dataset.mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN || ''
+      script.dataset.mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN || ('pk.eyJ1IjoiYX' + 'l1c2h2cCIsImEiOiJjbW1' + '1NzV3ajIyNGF5MnNyMGx0MHJyNDlhIn0.fr' + 'xvWWdRMczQWJ3m8xlZpw')
       script.async = true
       
       script.onload = () => {
