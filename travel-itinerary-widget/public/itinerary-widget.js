@@ -292,45 +292,44 @@
     try {
       const apiBase = script.dataset.apiBase || "https://tours-and-packages.vercel.app";
       let city = null;
-      
-      // 1. Try first-party Vercel edge geocoding (Fastest & most reliable in prod)
-      try {
-        const r0 = await fetch(`${apiBase}/api/geocode/ip`).then(r => r.json());
-        if(r0.city) city = r0.city + (r0.region ? `, ${r0.region}` : "");
-      } catch(e) {}
 
-      // 2. Try third-party IP geocoding fallbacks
-      if (!city) {
+      // 1. Try Browser GPS first (Most accurate)
+      if (navigator.geolocation) {
         try {
-          const r1 = await fetch("https://ipapi.co/json/").then(r => r.json());
-          if(r1.city) city = r1.city + (r1.region ? `, ${r1.region}` : "");
+          const pos = await new Promise((rs, rj) => navigator.geolocation.getCurrentPosition(rs, rj, {timeout: 4000, enableHighAccuracy: true})).catch(() => null);
+          if (pos) {
+            const rev = await fetch(`${apiBase}/api/geocode/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`).then(r => r.json()).catch(() => null);
+            if (rev && rev.city) city = rev.city + (rev.address?.state ? `, ${rev.address.state}` : "");
+          }
         } catch(e) {}
       }
-      
+
+      // 2. Fallback to first-party Vercel IP geocoding
       if (!city) {
         try {
-          const r2 = await fetch("https://ipwho.is/").then(r => r.json());
-          if(r2.city) city = r2.city + (r2.region ? `, ${r2.region}` : "");
+          const r0 = await fetch(`${apiBase}/api/geocode/ip`).then(r => r.json());
+          if(r0.city) city = r0.city + (r0.region ? `, ${r0.region}` : "");
         } catch(e) {}
       }
-      
+
+      // 3. Fallback to third-party IP geocoding chain
       if (!city) {
         try {
-          const r3 = await fetch("https://get.geojs.io/v1/ip/geo.json").then(r => r.json());
-          if(r3.city) city = r3.city + (r3.region ? `, ${r3.region}` : "");
+          const providers = ["https://ipwho.is/", "https://ipapi.co/json/", "https://get.geojs.io/v1/ip/geo.json"];
+          for (const url of providers) {
+            try {
+              const res = await fetch(url).then(r => r.json());
+              if (res.city) {
+                city = res.city + (res.region || res.region_name ? `, ${res.region || res.region_name}` : "");
+                break;
+              }
+            } catch(e) {}
+          }
         } catch(e) {}
       }
 
       if (city) {
         state.dest = city;
-      } else if (navigator.geolocation) {
-        // High-precision fallback
-        const pos = await new Promise((rs, rj) => navigator.geolocation.getCurrentPosition(rs, rj, {timeout:5000})).catch(() => null);
-        if (pos) {
-          const apiBase = script.dataset.apiBase || "https://tours-and-packages.vercel.app";
-          const rev = await fetch(`${apiBase}/api/geocode/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`).then(r => r.json()).catch(() => null);
-          if (rev && rev.city) state.dest = rev.city;
-        }
       }
     } finally {
       if (btn) { btn.innerHTML = orig; btn.disabled = false; }
