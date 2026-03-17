@@ -139,6 +139,9 @@
     .leaflet-container { background: #F8FAFC !important; }
     .tiw-marker { cursor: pointer; transition: transform 0.2s ease; }
     .tiw-marker:hover { transform: scale(1.15); z-index: 10; }
+    .mapboxgl-popup { z-index: 20; }
+    .mapboxgl-popup-content { padding: 6px 10px !important; border-radius: 8px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important; border: 1px solid #E2E8F0 !important; font-family: 'Plus Jakarta Sans', sans-serif !important; }
+    .mapboxgl-popup-close-button { display: none !important; }
   `;
 
   const styleEl = document.createElement("style");
@@ -367,7 +370,7 @@
           </div>
           <div style="border-top:1px solid #F1F5F9; padding-top:1rem; display:flex; justify-content:space-between; align-items:center">
              <span style="font-size:0.75rem; color:#94A3B8; font-weight:600">🗺️ ${item.getting_there || "Walk or Cab"}</span>
-             <a href="https://maps.google.com/?q=${item.lat},${item.lon}" target="_blank" style="color:#14B8A6; font-size:0.8rem; font-weight:800; text-decoration:none; display:flex; align-items:center; gap:5px">📍 GOOGLE MAPS</a>
+             <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title + ' ' + (data.city || ''))}" target="_blank" style="color:#14B8A6; font-size:0.8rem; font-weight:800; text-decoration:none; display:flex; align-items:center; gap:5px">📍 GOOGLE MAPS</a>
           </div>
         </div>
       `;
@@ -408,7 +411,8 @@
         const el = document.createElement('div');
         el.className = 'tiw-marker';
         el.innerHTML = `<div style="background:${cat.color};width:24px;height:24px;border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,0.15)">${cat.emoji}</div>`;
-        new mapboxgl.Marker(el).setLngLat([parseFloat(i.lon), parseFloat(i.lat)]).addTo(mapInstance);
+        const popup = new mapboxgl.Popup({ offset: 15, closeButton: false }).setHTML(`<div style="font-weight:700;font-size:12px;color:#0F172A;white-space:nowrap">${i.title}</div>`);
+        new mapboxgl.Marker(el).setLngLat([parseFloat(i.lon), parseFloat(i.lat)]).setPopup(popup).addTo(mapInstance);
         b.extend([parseFloat(i.lon), parseFloat(i.lat)]);
         coords.push(`${i.lon},${i.lat}`);
       });
@@ -436,7 +440,7 @@
     }
     mapInstance = L.map(el, {attributionControl: false}).setView([items[0].lat, items[0].lon], 13);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(mapInstance);
-    items.forEach(i => L.marker([i.lat, i.lon]).addTo(mapInstance));
+    items.forEach(i => L.marker([i.lat, i.lon]).bindPopup(`<strong style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px">${i.title}</strong>`).addTo(mapInstance));
     const group = new L.featureGroup(items.map(i => L.marker([i.lat, i.lon])));
     mapInstance.fitBounds(group.getBounds().pad(0.1));
   }
