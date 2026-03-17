@@ -64,7 +64,7 @@ const Details = () => {
                 <span className="material-symbols-outlined text-lg text-yellow-500 fill-1">star</span> 4.8 (124 Reviews)
               </span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-tight">Ancient Wonders of Greece</h1>
+            <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-tight font-serif italic text-dark">Ancient Wonders of Greece</h1>
             <p className="text-slate-600 dark:text-slate-400 text-lg flex items-center gap-2">
               <span className="material-symbols-outlined text-primary text-xl">location_on</span> Athens, Mykonos, Santorini
             </p>
@@ -118,7 +118,7 @@ const Details = () => {
           </div>
 
           <section className="mb-14 scroll-mt-32" id="overview">
-            <h3 className="text-2xl font-bold mb-6">Tour Overview</h3>
+            <h3 className="text-2xl font-black mb-6 font-serif lowercase italic text-primary">Tour Overview</h3>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
               Journey through the cradle of Western civilization. Starting in the historic heart of Athens, you'll witness the grandeur of the Acropolis before setting sail for the sun-drenched Cyclades. Experience the cosmopolitan energy of Mykonos and the breathtaking caldera views of Santorini. This curated 8-day itinerary blends archeological discovery with island relaxation.
             </p>
@@ -129,7 +129,7 @@ const Details = () => {
               initial={{ x: -20, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
               viewport={{ once: false, amount: 0.1 }}
-              className="text-2xl font-bold mb-8 flex items-center gap-3"
+              className="text-2xl font-black mb-8 flex items-center gap-3 font-serif lowercase italic text-primary"
             >
               <div className="w-2 h-8 bg-primary rounded-full"></div>
               Day-by-Day Itinerary

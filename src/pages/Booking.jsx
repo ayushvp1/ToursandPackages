@@ -16,8 +16,8 @@ const Booking = () => {
               <span className="material-symbols-outlined transition-transform group-hover:-translate-x-1">arrow_back</span>
               Back to Package
             </Link>
-            <h1 className="text-4xl font-black mb-4">Complete Your Booking</h1>
-            <p className="text-slate-500">Please provide your details to finalize your extraordinary adventure.</p>
+            <h1 className="text-4xl font-black mb-4 font-serif italic text-dark lowercase tracking-tight">Complete Your Booking</h1>
+            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest pl-1 pt-1">Finalize your extraordinary adventure.</p>
           </div>
 
           <motion.form 
@@ -110,8 +110,8 @@ const Booking = () => {
                 }}
                 className="space-y-4"
               >
-                <h3 className="text-xl font-black flex items-center gap-4">
-                  <span className="w-10 h-10 rounded-2xl bg-primary text-white flex items-center justify-center text-sm font-black shadow-lg shadow-primary/20">
+                <h3 className="text-xl font-black flex items-center gap-4 font-serif italic lowercase text-primary">
+                  <span className="w-10 h-10 rounded-2xl bg-primary text-white flex items-center justify-center text-sm font-black shadow-lg shadow-primary/20 NOT-ITALIC">
                     {section.step}
                   </span>
                   {section.title}
@@ -141,7 +141,7 @@ const Booking = () => {
             transition={{ delay: 0.8, duration: 0.6 }}
             className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-10 shadow-2xl sticky top-32"
           >
-            <h4 className="text-xl font-black mb-8 border-b border-slate-100 dark:border-slate-800 pb-4">Booking Summary</h4>
+            <h4 className="text-xl font-black mb-8 border-b border-slate-100 dark:border-slate-800 pb-4 font-serif italic lowercase text-dark">Booking Summary</h4>
             <div className="space-y-6 mb-10">
               {[
                 { label: "Package", val: "Ancient Wonders..." },

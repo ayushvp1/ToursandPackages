@@ -7,17 +7,17 @@ const Layout = ({ children }) => {
       <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <Link to="/" className="flex items-center gap-2 group">
-              <div className="text-primary dark:text-blue-400">
-                <span className="material-symbols-outlined text-3xl">terrain</span>
+            <Link to="/" className="flex items-center gap-3 group">
+              <div className="text-primary">
+                <span className="material-symbols-outlined text-4xl">terrain</span>
               </div>
-              <h1 className="text-xl font-bold tracking-tight text-primary dark:text-white">Tours and <span className="text-blue-500">Package</span></h1>
+              <h1 className="text-2xl font-black tracking-tight text-dark font-serif lowercase italic">tours<span className="text-secondary">&</span>package</h1>
             </Link>
-            <nav className="hidden md:flex items-center gap-8">
-              <Link to="/listing" className="text-sm font-medium hover:text-primary transition-colors">Tours</Link>
-              <a className="text-sm font-medium hover:text-primary transition-colors" href="#">About</a>
-              <a className="text-sm font-medium hover:text-primary transition-colors" href="#">Contact</a>
-              <button className="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-lg text-sm font-bold transition-all">Sign In</button>
+            <nav className="hidden md:flex items-center gap-10">
+              <Link to="/listing" className="text-xs font-black uppercase tracking-widest hover:text-primary transition-colors">Tours</Link>
+              <a className="text-xs font-black uppercase tracking-widest hover:text-primary transition-colors" href="#">About</a>
+              <a className="text-xs font-black uppercase tracking-widest hover:text-primary transition-colors" href="#">Contact</a>
+              <button className="bg-primary hover:bg-secondary text-white px-8 py-3 rounded-full text-xs font-black tracking-widest transition-all shadow-lg shadow-primary/20">SIGN IN</button>
             </nav>
             <div className="md:hidden">
               <span className="material-symbols-outlined cursor-pointer">menu</span>

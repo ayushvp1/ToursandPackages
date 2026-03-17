@@ -67,9 +67,9 @@ const Listing = () => {
         className="w-full lg:w-80 flex flex-col gap-8"
       >
         <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm sticky top-24">
-          <h3 className="text-xl font-black mb-8 flex items-center gap-3">
+          <h3 className="text-xl font-black mb-8 flex items-center gap-3 font-serif italic lowercase text-primary">
             <span className="material-symbols-outlined text-primary text-2xl">filter_list</span>
-            Filters
+            filters
           </h3>
           <div className="space-y-10">
             <div>
@@ -117,8 +117,8 @@ const Listing = () => {
       <div className="flex-1 flex flex-col gap-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
           <div>
-            <h2 className="text-lg font-bold">142 Packages Found</h2>
-            <p className="text-sm text-slate-500">Based on your current filters</p>
+            <h2 className="text-2xl font-black font-serif italic text-dark lowercase tracking-tight">142 packages found</h2>
+            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Refined by your preferences</p>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-sm text-slate-500 font-medium">Sort by:</span>
@@ -161,7 +161,7 @@ const Listing = () => {
                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
               <div className="p-6 flex flex-col flex-1">
-                <h3 className="text-xl font-black leading-tight group-hover:text-primary transition-colors mb-4">{pkg.title}</h3>
+                <h3 className="text-xl font-black leading-tight group-hover:text-primary transition-colors mb-4 font-serif italic lowercase">{pkg.title}</h3>
                 <div className="flex items-center gap-3 text-slate-500 text-sm mb-6">
                   <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/50 px-2 py-1 rounded-md">
                     <span className="material-symbols-outlined text-sm">schedule</span>
