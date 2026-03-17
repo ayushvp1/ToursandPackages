@@ -11,7 +11,7 @@ const Layout = ({ children }) => {
               <div className="text-primary">
                 <span className="material-symbols-outlined text-4xl">terrain</span>
               </div>
-              <h1 className="text-2xl font-black tracking-tight text-dark font-serif lowercase italic">tours<span className="text-secondary">&</span>package</h1>
+              <h1 className="text-xl font-black tracking-tight text-dark font-serif lowercase italic">tours<span className="text-secondary">&</span>packages</h1>
             </Link>
             <nav className="hidden md:flex items-center gap-10">
               <Link to="/listing" className="text-xs font-black uppercase tracking-widest hover:text-primary transition-colors">Tours</Link>
@@ -35,7 +35,7 @@ const Layout = ({ children }) => {
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-2 mb-6">
               <span className="material-symbols-outlined text-blue-400 text-3xl">terrain</span>
-              <h1 className="text-xl font-bold tracking-tight">Tours and Package</h1>
+              <h1 className="text-xl font-bold tracking-tight">Tours and Packages</h1>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-6">Curating world-class travel experiences for over 15 years. Join us in exploring the hidden wonders of the globe.</p>
             <div className="flex gap-4">
@@ -78,7 +78,7 @@ const Layout = ({ children }) => {
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-slate-500 text-xs">© 2024 Tours and Package. All rights reserved.</p>
+          <p className="text-slate-500 text-xs">© 2024 Tours and Packages. All rights reserved.</p>
           <div className="flex gap-8">
             <img className="h-6 opacity-50 grayscale hover:grayscale-0 transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSQ5q-9ovsVxN6OAh22KQ4uCvhrhBSozoiieuQroN7m9oz6qM3I-ZwbXFSz1ZqcrG02IaT_HcEfqUCZ1PxUl3SkQt-qThptoKANt2irCQoVvX15K0DljbKRiD6viPofmW-uck5exBZwAzwiM76XybHim3Yr-XOA9V_gSEbeOgl2joqJwNUkhK__wKohbcEYyt2n6slH2t-6G7AmqNoWb2yM2Cqt0zbHonnprePzo4vc4abIt4eQontMpoFln0IjIcmaglRLP20M70" alt="Visa" />
             <img className="h-6 opacity-50 grayscale hover:grayscale-0 transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtSLTt-FoWvC7e_TBJnr5mnqGAZ3ukOxXVBpy5WSIfiAk0CmLWsJm2ObNRWyOBlZJQIjHrCmjYpbblExqDtpUse_PqT7MWfDDrMhcUITN1DJlHwGq9--6dwV5wsuVijK_HlnAn68-wN54DDm-pv-fBRRfP5TK4PCZcm87VKPdrL2WOi-EfHqrMugHst8GTN04cL3ul9TJAO6Kq9qLSikOx-o6dmcnNzq1mGqfW4SwIRrJHLRnP8cUlhOiVUZICpykf_rv9JZGU3_s" alt="Mastercard" />
