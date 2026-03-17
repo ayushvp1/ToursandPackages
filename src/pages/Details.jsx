@@ -177,12 +177,12 @@ const Details = () => {
                 <div>
                   <p className="text-sm text-slate-500 font-bold uppercase tracking-wider mb-1">Starting from</p>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-black text-slate-900 dark:text-white">$1,299</span>
+                    <span className="text-4xl font-black text-slate-900 dark:text-white">₹1,299</span>
                     <span className="text-slate-500 text-sm font-medium">/ person</span>
                   </div>
                 </div>
                 <div className="bg-primary/10 text-primary px-3 py-1.5 rounded-lg text-xs font-black">
-                  SAVE $200
+                  SAVE ₹200
                 </div>
               </div>
               

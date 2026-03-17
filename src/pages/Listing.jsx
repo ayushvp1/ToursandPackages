@@ -6,7 +6,7 @@ const listingPackages = [
     id: 1,
     title: "Parisian Nights & French Riviera",
     duration: "7 Days, 6 Nights",
-    price: "$1,299",
+    price: "₹1,299",
     rating: 4.9,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuA5ikP7H7R29AR7SzxZYuankjpzZahn5pvm1jpDrTluTHweWoCkBoTddjD1R7Q1VbuXlIU-LEO6WnbPehOmBfGo2m9i-72iRmlT9zxuGoUod1Upi0w5byrM4_aEiWFSRuQC5A2pFFwWTTckOx07DzFneJrWTmI41h-3cJjWGSKBlsDnxPjqpRHEolIPf1HC18kT4GdwMsxTtvd8Jh_bZwwQjtb2ogU4pYpZjJ9kOZKLA3yVZFQtOowrcqFtCGH6eQMyI8qdA9fpJ8w"
   },
@@ -14,7 +14,7 @@ const listingPackages = [
     id: 2,
     title: "Imperial Japan Discovery",
     duration: "10 Days, 9 Nights",
-    price: "$2,450",
+    price: "₹2,450",
     rating: 4.8,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCgjOMr4vhOSly9nDsGl5ZzjPhrYWb5J_TdxnvOeyuzLrdUdAiK8U7a_yZPmdA0jnBYKcqPATiUw3EYrSEsPWAL4pRJoQCuCAes1BwlK_OUrNR2Jz5BOUY2Pn3UtIZw3b4-WEjtckEU3-vJODZYSaRDR02kzViMkePePzZ2eaZPyv3zi1dd2LnsVXgLRCz23hV6653dU4L8LoV0_V1UVc5zORopeYdYP3IRlttHU91O-ZsGB8VPamtV6xImKlViu8PP3lsGDTlJrGQ"
   },
@@ -22,7 +22,7 @@ const listingPackages = [
     id: 3,
     title: "Santorini & Mykonos Getaway",
     duration: "5 Days, 4 Nights",
-    price: "$1,899",
+    price: "₹1,899",
     rating: 5.0,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDcj1zN8hcRZX3Ckjdwphvc9WaQdd-qtq-yFhfDeyJeTNTyKm73dm8-7omlih25RPuJGyCkwReU4mwGjydHFcytvnBeqCA37MlQXmSETPedM1eNJ9R-3E0uaN2ktriFAON3pYvF11MDN69TyFdGu5tDfiiVTAYkn95QveJ56050S8zlMPtP7rHFvbtvhJVEyd2mcStkXpNwVlEJohQBko8zx8ZCKP0PNn4SfA7OJdhW0ZvjYX2F_XsrBDASn5ANuqFfgwI8VHk7pgo"
   },
@@ -30,7 +30,7 @@ const listingPackages = [
     id: 4,
     title: "Moroccan Desert Expedition",
     duration: "8 Days, 7 Nights",
-    price: "$950",
+    price: "₹950",
     rating: 4.7,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAZSfGAZc50vk7_mWwyqDJYFmEI9v4xW9elwnT1oBE1-1yVn2DtohY73Zj7ZFZJGsRO0SPiSfjG_3Rthz360Td7U8Q-8Q59q6yMyF9awtsgoORMdoJvyEyeBxNtlyrP3V0Ey4cyT6uq5b090bUvEwgcRhPXcc5r8yRIVKIwzPXrYPed2KFE7pvqnrHIomNj16WGZzHldUFlgK0u903lmeE2dS3UOXFkpxaKRQGY7jceFWsDKHE120r8T-JloBEKuQoV1KvFpTyJ3xQ"
   },
@@ -38,7 +38,7 @@ const listingPackages = [
     id: 5,
     title: "Mediterranean Luxury Cruise",
     duration: "14 Days, 13 Nights",
-    price: "$3,200",
+    price: "₹3,200",
     rating: 4.9,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuA5WmLJIX63M82DfkjvC1msUXDhgAfQ1bSRgSdAZU-JZ6i4H2V_evXr7YYhqPonGRwQUZoU9v2yz8tndfPRdYT_UNk5d13tI3uO4rkONtf8weD8TX9iB4OO-zxUdW9Kd1akOOtVI_xvl2zFvemD2mcf1siknoqayrdQ3Y0xYcJxujSEeGIJurJXLkLWxcoLUAdGcHDljw217xzMbieu_5-fGRgrmOvYfi0Ze9BqBRbM-DNTe_f1qPSouxzk3GlAMjx32l6kQXYZl0E"
   },
@@ -46,7 +46,7 @@ const listingPackages = [
     id: 6,
     title: "Classic European Capitals",
     duration: "12 Days, 11 Nights",
-    price: "$2,100",
+    price: "₹2,100",
     rating: 4.6,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBxSSS8ylXbk1kB5RQXYTFkGd6AEq0qJAgOLmg7dN3bsmgX5WfaPOjUt7jvtTPGgr4ojbOgSL_tfTzCqw0VTtOHlPNHzSCvYRrIL3TThY8FuJ4hHbibrWqHBQn6gg7TWrW_Ib1mRYdewf3dq3V7FhBBWgENd7gx9BrEqDoAwnfmCHC_0xufIykMoTjYtf3P1Yc18gUg5c2DhBMv7mKMzs0fyp276-Njk7e0RUneUq_1dFz2I_tPOEvKT5HVdYND1gE7KbmzikrEzw0"
   }
@@ -102,8 +102,8 @@ const Listing = () => {
                   <div className="absolute right-1/4 top-1/2 -translate-y-1/2 w-5 h-5 bg-white border-2 border-primary rounded-full shadow-lg cursor-pointer hover:scale-120 transition-transform"></div>
                 </div>
                 <div className="flex justify-between text-[10px] font-black uppercase tracking-tighter text-slate-400">
-                  <span>$500</span>
-                  <span>$5000</span>
+                  <span>₹500</span>
+                  <span>₹5000</span>
                 </div>
               </div>
             </div>

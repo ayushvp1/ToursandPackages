@@ -449,7 +449,7 @@
     // Badges
     const badges = [
       { icon: "⏰", text: data._meta ? `${data._meta.travelMinsToStation} min to station` : "—" },
-      { icon: "💰", text: data.cost_estimate || "—" },
+      { icon: "💰", text: (data.cost_estimate || "—").replace(/\$/g, "₹") },
       { icon: "🌤️", text: data.weather_tip  || "Check weather" },
     ];
     root.querySelector("#tiw-badges").innerHTML = badges
@@ -485,7 +485,7 @@
               <h3 style="margin:0;font-size:.97rem;font-weight:600;color:#0F172A;line-height:1.3">${item.title}</h3>
               ${item.subtitle ? `<p style="margin:.12rem 0 0;font-size:.73rem;color:#334155">${item.subtitle}</p>` : ""}
             </div>
-            ${item.cost ? `<div style="background:#060F1C;border:1px solid #1E3A5F;border-radius:7px;padding:3px 9px;font-size:.7rem;color:#34D399;white-space:nowrap;flex-shrink:0">${item.cost}</div>` : ""}
+            ${item.cost ? `<div style="background:#060F1C;border:1px solid #1E3A5F;border-radius:7px;padding:3px 9px;font-size:.7rem;color:#34D399;white-space:nowrap;flex-shrink:0">${item.cost.replace(/\$/g, "₹")}</div>` : ""}
           </div>
           ${item.description ? `<p style="margin:.45rem 0 .65rem;font-size:.84rem;color:#1E293B;line-height:1.65">${item.description}</p>` : ""}
           <div style="display:flex;flex-wrap:wrap;gap:.4rem">

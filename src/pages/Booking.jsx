@@ -129,7 +129,7 @@ const Booking = () => {
               whileTap={{ scale: 0.99 }}
               className="w-full bg-primary text-white font-black py-6 rounded-3xl transition-all shadow-2xl shadow-primary/30 text-xl tracking-widest mt-10"
             >
-              CONFIRM BOOKING — $2,598
+              CONFIRM BOOKING — ₹2,598
             </motion.button>
           </motion.form>
         </div>
@@ -156,7 +156,7 @@ const Booking = () => {
               <div className="pt-6 mt-6 border-t border-dashed border-slate-200 dark:border-slate-800">
                 <div className="flex justify-between items-center mb-3">
                   <span className="text-slate-400 font-bold text-xs uppercase tracking-widest">Subtotal</span>
-                  <span className="font-black text-slate-800 dark:text-slate-200">$2,598</span>
+                  <span className="font-black text-slate-800 dark:text-slate-200">₹2,598</span>
                 </div>
                 <div className="flex justify-between items-center mb-6">
                   <span className="text-slate-400 font-bold text-xs uppercase tracking-widest">Tax & Fees</span>
@@ -164,7 +164,7 @@ const Booking = () => {
                 </div>
                 <div className="flex justify-between items-center pt-6 border-t-2 border-slate-900 dark:border-slate-100">
                   <span className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Total</span>
-                  <span className="text-3xl font-black text-primary">$2,598</span>
+                  <span className="text-3xl font-black text-primary">₹2,598</span>
                 </div>
               </div>
             </div>

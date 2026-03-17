@@ -93,9 +93,9 @@ const Home = () => {
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">payments</span>
               <select className="w-full pl-10 border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-lg focus:ring-primary focus:border-primary appearance-none border p-2">
                 <option>All Prices</option>
-                <option>$0 - $1,000</option>
-                <option>$1,000 - $3,000</option>
-                <option>$3,000+</option>
+                <option>₹0 - ₹1,000</option>
+                <option>₹1,000 - ₹3,000</option>
+                <option>₹3,000+</option>
               </select>
             </div>
           </div>
@@ -153,7 +153,7 @@ const Home = () => {
           {[
             {
               title: "Swiss Alps Discovery",
-              price: "$2,499",
+              price: "₹2,499",
               days: "8",
               rating: "4.5",
               reviews: "120",
@@ -161,7 +161,7 @@ const Home = () => {
             },
             {
               title: "Bali Wellness Escape",
-              price: "$1,850",
+              price: "₹1,850",
               days: "12",
               rating: "5.0",
               reviews: "85",
@@ -169,7 +169,7 @@ const Home = () => {
             },
             {
               title: "Kenyan Safari Expedition",
-              price: "$3,200",
+              price: "₹3,200",
               days: "10",
               rating: "5.0",
               reviews: "154",
