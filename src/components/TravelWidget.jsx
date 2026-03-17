@@ -38,8 +38,8 @@ const TravelWidget = () => {
   return (
     <section className="max-w-7xl mx-auto px-4 py-20" id="itinerary-planner">
       <div className="mb-12 text-center">
-        <h3 className="text-3xl font-bold mb-4">AI Trip Planner</h3>
-        <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+        <h3 className="text-4xl font-black mb-4 font-serif italic lowercase text-primary">ai trip planner</h3>
+        <p className="text-slate-500 max-w-2xl mx-auto font-medium">
           Arriving by train? Use our AI-powered travel widget to map out your perfect day. 
           Simply detect your location or enter your destination to get started.
         </p>

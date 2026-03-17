@@ -89,8 +89,8 @@ const Home = () => {
             </div>
           </div>
           <div className="flex items-end">
-            <button className="w-full bg-primary text-white h-11 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors">
-              <span className="material-symbols-outlined">search</span> Search
+            <button className="w-full bg-primary text-white h-11 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-secondary transition-all shadow-lg shadow-primary/20">
+              <span className="material-symbols-outlined">search</span> SEARCH
             </button>
           </div>
         </motion.div>
@@ -107,11 +107,11 @@ const Home = () => {
           <div>
             <motion.h3 
               initial={{ x: -50, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            viewport={{ once: false, amount: 0.1 }}
-            className="text-4xl font-black mb-4"
+              whileInView={{ x: 0, opacity: 1 }}
+              viewport={{ once: false, amount: 0.1 }}
+              className="text-4xl font-black mb-4 font-serif italic lowercase text-dark"
             >
-              Featured Experiences
+              featured experiences
             </motion.h3>
             <p className="text-slate-600 dark:text-slate-400 text-lg">Hand-picked destinations for your next escape.</p>
           </div>

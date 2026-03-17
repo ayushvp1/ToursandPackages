@@ -34,7 +34,7 @@ const Layout = ({ children }) => {
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-2 mb-6">
-              <span className="material-symbols-outlined text-blue-400 text-3xl">terrain</span>
+              <span className="material-symbols-outlined text-primary text-3xl">terrain</span>
               <h1 className="text-xl font-bold tracking-tight">Tours and Packages</h1>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-6">Curating world-class travel experiences for over 15 years. Join us in exploring the hidden wonders of the globe.</p>

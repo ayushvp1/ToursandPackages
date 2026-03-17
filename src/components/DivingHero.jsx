@@ -131,7 +131,7 @@ const DivingHero = () => {
             <motion.div 
               animate={{ y: [0, 100] }}
               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              className="absolute top-0 left-0 w-full h-1/4 bg-blue-600"
+              className="absolute top-0 left-0 w-full h-1/4 bg-primary"
             />
           </motion.div>
         </motion.div>
