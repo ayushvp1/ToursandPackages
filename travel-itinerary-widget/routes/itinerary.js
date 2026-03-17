@@ -304,6 +304,25 @@ router.post("/", async (req, res) => {
     }
     console.log("--- PARSED ITINERARY ---", itinerary);
 
+    // Step 5: Verify coordinates with Mapbox for accuracy
+    if (!usageTracker.isOverLimit && process.env.MAPBOX_ACCESS_TOKEN) {
+      log.debug("Verifying stop coordinates with Mapbox", { reqId });
+      const verifiedItems = await Promise.all((itinerary.items || []).map(async (item) => {
+        // Search for the specific place within the destination city
+        const query = `${item.title}, ${dest}`;
+        try {
+          const realCoords = await cachedGeocode(query, _geocode);
+          if (realCoords) {
+            return { ...item, lat: realCoords.lat, lon: realCoords.lon };
+          }
+        } catch (e) {
+          log.warn(`Coord verification failed for ${item.title}`, e);
+        }
+        return item; // Fallback to AI coords if lookup fails
+      }));
+      itinerary.items = verifiedItems;
+    }
+
     itinerary._meta = {
       poisFound:           pois.length,
       travelMinsToStation: travelMins,
