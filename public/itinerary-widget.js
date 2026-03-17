@@ -205,10 +205,14 @@
 
         <div class="tiw-grid-2" style="margin-bottom:2.5rem">
           <div>
+            <label style="display:block; font-size:.75rem; font-weight:800; color:#94A3B8; margin-bottom:.8rem; text-transform:uppercase">Arrival Station / Airport</label>
+            <input type="text" id="tiw-input-arr-pt" placeholder="e.g. Kozhikode Station" value="Railway Station" style="width:100%; padding:1rem; border-radius:12px; border:1px solid #E2E8F0; background:#fff !important; margin-bottom:1rem">
             <label style="display:block; font-size:.75rem; font-weight:800; color:#94A3B8; margin-bottom:.8rem; text-transform:uppercase">Arrival Time</label>
             <input type="time" id="tiw-input-arr" value="09:00" style="width:100%; padding:1rem; border-radius:12px; border:1px solid #E2E8F0; background:#fff !important">
           </div>
           <div>
+            <label style="display:block; font-size:.75rem; font-weight:800; color:#94A3B8; margin-bottom:.8rem; text-transform:uppercase">Departure Station / Airport</label>
+            <input type="text" id="tiw-input-dep-pt" placeholder="e.g. Kozhikode Station" value="Railway Station" style="width:100%; padding:1rem; border-radius:12px; border:1px solid #E2E8F0; background:#fff !important; margin-bottom:1rem">
             <label style="display:block; font-size:.75rem; font-weight:800; color:#94A3B8; margin-bottom:.8rem; text-transform:uppercase">Departure Time</label>
             <input type="time" id="tiw-input-dep" value="19:00" style="width:100%; padding:1rem; border-radius:12px; border:1px solid #E2E8F0; background:#fff !important">
           </div>
@@ -311,7 +315,9 @@
 
   async function generate(root) {
     state.dest = root.querySelector("#tiw-input-dest").value;
+    state.arrivalPoint = root.querySelector("#tiw-input-arr-pt")?.value || "Railway Station";
     state.arrivalTime = root.querySelector("#tiw-input-arr").value;
+    state.departurePoint = root.querySelector("#tiw-input-dep-pt")?.value || "Railway Station";
     state.departureTime = root.querySelector("#tiw-input-dep").value;
     if (!state.dest) return alert("Please specify a city!");
 
@@ -320,7 +326,7 @@
       const apiBase = script.dataset.apiBase || "https://tours-and-packages.vercel.app";
       const res = await fetch(`${apiBase}/api/itinerary`, {
         method: "POST", headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({...state, arrivalPoint: "Railway Station", departurePoint: "Railway Station"})
+        body: JSON.stringify({...state})
       });
       if (!res.ok) throw new Error("Generation failed");
       const data = await res.json();
