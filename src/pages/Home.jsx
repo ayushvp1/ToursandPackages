@@ -11,7 +11,7 @@ const Home = () => {
       transition={{ duration: 0.5 }}
     >
       {/* Hero Section */}
-      <section className="relative h-[85vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[95vh] flex items-center justify-center overflow-hidden">
         <motion.div 
           initial={{ scale: 1.2, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -22,12 +22,12 @@ const Home = () => {
             backgroundAttachment: "fixed"
           }}
         ></motion.div>
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto pb-24">
           <motion.h2 
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="text-6xl md:text-8xl font-black text-white mb-6 leading-tight font-serif"
+            className="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-[1.1] font-serif"
           >
             Your Day, <br/>
             <span className="text-secondary italic font-serif">Perfectly Mapped.</span>
@@ -36,7 +36,7 @@ const Home = () => {
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.7 }}
-            className="text-xl md:text-2xl text-white/80 mb-10 max-w-2xl mx-auto font-medium"
+            className="text-base md:text-lg text-white/70 mb-8 max-w-2xl mx-auto font-medium"
           >
             Arriving by train? Tell us your window — we'll craft a beautifully time-mapped day and tell you exactly when to head back.
           </motion.p>
@@ -45,12 +45,12 @@ const Home = () => {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, delay: 1 }}
           >
-            <button className="group relative overflow-hidden bg-primary text-white px-10 py-5 rounded-full text-xl font-bold shadow-2xl transition-all hover:scale-105 active:scale-95 flex items-center gap-3 mx-auto">
+            <button className="group relative overflow-hidden bg-primary text-white px-8 py-4 rounded-full text-base font-bold shadow-2xl transition-all hover:scale-105 active:scale-95 flex items-center gap-2 mx-auto">
               <span className="material-symbols-outlined fill-1">location_on</span>
               <span className="relative z-10">Detect My Location & Begin</span>
               <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
             </button>
-            <p className="text-white/50 text-xs mt-4 font-medium tracking-wide">Location used once. Never stored.</p>
+            <p className="text-white/30 text-[9px] mt-3 font-medium tracking-[0.2em] uppercase">Location used once. Never stored.</p>
           </motion.div>
         </div>
       </section>
