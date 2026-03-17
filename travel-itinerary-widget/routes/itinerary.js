@@ -64,14 +64,26 @@ async function callGroq(prompt) {
 // ── Raw API helpers (passed into cache wrappers) ─────────────
 
 async function _geocode(query) {
+  const token = process.env.MAPBOX_ACCESS_TOKEN;
+  if (!token) return _geocodeFallback(query);
+
+  try {
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${token}&limit=1`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Mapbox geocoding failed");
+    const data = await res.json();
+    if (!data.features || !data.features.length) return null;
+    const [lon, lat] = data.features[0].center;
+    return { lat, lon };
+  } catch (err) {
+    log.error("Mapbox geocode error, falling back", err);
+    return _geocodeFallback(query);
+  }
+}
+
+async function _geocodeFallback(query) {
   const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`;
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent":      "TravelItineraryWidget/1.0 (contact@yoursite.com)",
-      "Accept-Language": "en",
-    },
-  });
-  if (!res.ok) throw new Error("Geocoding failed");
+  const res = await fetch(url, { headers: { "User-Agent": "TravelItineraryWidget/1.0" } });
   const data = await res.json();
   if (!data.length) return null;
   return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
@@ -117,6 +129,22 @@ async function _fetchPOIs(lat, lon) {
 }
 
 async function _getTravelMinutes(lat1, lon1, lat2, lon2) {
+  const token = process.env.MAPBOX_ACCESS_TOKEN;
+  if (!token) return _getTravelMinutesFallback(lat1, lon1, lat2, lon2);
+
+  try {
+    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${lon1},${lat1};${lon2},${lat2}?access_token=${token}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Mapbox directions failed");
+    const data = await res.json();
+    return Math.ceil((data.routes?.[0]?.duration || 1800) / 60);
+  } catch (err) {
+    log.error("Mapbox directions error, falling back", err);
+    return _getTravelMinutesFallback(lat1, lon1, lat2, lon2);
+  }
+}
+
+async function _getTravelMinutesFallback(lat1, lon1, lat2, lon2) {
   const url = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=false`;
   const res = await fetch(url);
   if (!res.ok) return 30;

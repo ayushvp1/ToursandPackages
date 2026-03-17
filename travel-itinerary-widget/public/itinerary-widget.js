@@ -23,8 +23,13 @@
 
   // ── Inject Styles ────────────────────────────────────────────
   const STYLES = `
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=DM+Sans:wght@300;400;500;600&display=swap');
-    @import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+    @font-face {
+      font-family: 'DM Sans';
+      font-style: normal;
+      font-weight: 400;
+      src: url('https://fonts.gstatic.com/s/dmsans/v11/rP2Fp2K8fYIO6MuclL986v8.woff2') format('woff2');
+    }
+    @import url('https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css');
 
     .tiw-root *, .tiw-root *::before, .tiw-root *::after { box-sizing: border-box; margin: 0; padding: 0; }
     .tiw-root {
@@ -574,11 +579,21 @@
     root.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  // ── Render Map ───────────────────────────────────────────────
+  // ── Render Map (Mapbox GL JS) ───────────────────────────────
   let mapInstance = null;
   function renderMap(root, items) {
-    if (!window.L) {
-      setTimeout(() => renderMap(root, items), 200);
+    const token = script?.dataset?.mapboxToken || "pk.eyJ1IjoiYXl1c2h2cDEiLCJhIjoiY204ZHB4NmI5MHZwejJxcTJkb3hncGdmdyJ9.y7fS-x_M5x7W-x_M5x7W-x_M5x7W-x";
+    
+    if (!window.mapboxgl) {
+      if (!document.getElementById('tiw-mapbox-js')) {
+        const s = document.createElement('script');
+        s.id = 'tiw-mapbox-js';
+        s.src = 'https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js';
+        s.onload = () => renderMap(root, items);
+        document.head.appendChild(s);
+      } else {
+        setTimeout(() => renderMap(root, items), 200);
+      }
       return;
     }
 
@@ -597,49 +612,71 @@
     }
     root.querySelector("#tiw-map-container").style.display = "block";
 
-    const coords = validItems.map(i => [parseFloat(i.lat), parseFloat(i.lon)]);
+    mapboxgl.accessToken = token;
     
-    mapInstance = L.map(mapEl, {
-      zoomControl: true,
-      scrollWheelZoom: false,
+    mapInstance = new mapboxgl.Map({
+      container: mapEl,
+      style: 'mapbox://styles/mapbox/light-v11',
+      center: [parseFloat(validItems[0].lon), parseFloat(validItems[0].lat)],
+      zoom: 12,
       attributionControl: false
-    }).setView(coords[0], 13);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstance);
-
-    const path = [];
-    validItems.forEach((item, idx) => {
-      const cat = getCat(item.category);
-      const markerEmoji = cat.emoji || "📍";
-      
-      const icon = L.divIcon({
-        html: `<div style="background:${cat.color}; width:24px; height:24px; border:2px solid #fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; box-shadow:0 0 10px rgba(0,0,0,0.5)">${markerEmoji}</div>`,
-        className: '',
-        iconSize: [24, 24],
-        iconAnchor: [12, 12]
-      });
-
-      L.marker([item.lat, item.lon], { icon })
-        .addTo(mapInstance)
-        .bindPopup(`<b style="color:#060F1C">${item.time} - ${item.title}</b><br><span style="color:#475569; font-size:11px">${item.category}</span>`);
-
-      path.push([item.lat, item.lon]);
     });
 
-    if (path.length > 1) {
-      L.polyline(path, {
-        color: '#14B8A6',
-        weight: 3,
-        opacity: 0.6,
-        dashArray: '5, 10'
-      }).addTo(mapInstance);
-    }
+    mapInstance.on('load', () => {
+      const bounds = new mapboxgl.LngLatBounds();
+      const coords = [];
 
-    const bounds = L.latLngBounds(path);
-    mapInstance.fitBounds(bounds, { padding: [30, 30] });
-    
-    // Fix map initialization issue in hidden container
-    setTimeout(() => { mapInstance.invalidateSize(); }, 500);
+      validItems.forEach((item, idx) => {
+        const cat = getCat(item.category);
+        const markerEmoji = cat.emoji || "📍";
+        
+        // Create custom marker element
+        const el = document.createElement('div');
+        el.className = 'tiw-marker';
+        el.innerHTML = `<div style="background:${cat.color}; width:28px; height:28px; border:2px solid #fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; box-shadow:0 4px 10px rgba(0,0,0,0.25); cursor:pointer">${markerEmoji}</div>`;
+
+        new mapboxgl.Marker(el)
+          .setLngLat([parseFloat(item.lon), parseFloat(item.lat)])
+          .setPopup(new mapboxgl.Popup({ offset: 25 })
+            .setHTML(`<b style="color:#0F172A; font-family:sans-serif">${item.time} - ${item.title}</b><br><span style="color:#64748B; font-size:11px">${item.category}</span>`))
+          .addTo(mapInstance);
+
+        bounds.extend([parseFloat(item.lon), parseFloat(item.lat)]);
+        coords.push([parseFloat(item.lon), parseFloat(item.lat)]);
+      });
+
+      if (coords.length > 1) {
+        mapInstance.addSource('route', {
+          'type': 'geojson',
+          'data': {
+            'type': 'Feature',
+            'properties': {},
+            'geometry': {
+              'type': 'LineString',
+              'coordinates': coords
+            }
+          }
+        });
+
+        mapInstance.addLayer({
+          'id': 'route',
+          'type': 'line',
+          'source': 'route',
+          'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          'paint': {
+            'line-color': '#14B8A6',
+            'line-width': 4,
+            'line-opacity': 0.6,
+            'line-dasharray': [1, 2]
+          }
+        });
+      }
+
+      mapInstance.fitBounds(bounds, { padding: 40, animate: true });
+    });
   }
 
   // ── Mount Widget ─────────────────────────────────────────────
