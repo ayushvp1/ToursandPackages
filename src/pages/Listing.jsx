@@ -60,50 +60,59 @@ const Listing = () => {
       exit={{ opacity: 0 }}
       className="flex flex-col lg:flex-row px-6 lg:px-20 py-8 gap-8"
     >
-      <aside className="w-full lg:w-72 flex flex-col gap-8">
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
-          <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary">filter_list</span>
+      <motion.aside 
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="w-full lg:w-80 flex flex-col gap-8"
+      >
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm sticky top-24">
+          <h3 className="text-xl font-black mb-8 flex items-center gap-3">
+            <span className="material-symbols-outlined text-primary text-2xl">filter_list</span>
             Filters
           </h3>
-          <div className="space-y-8">
+          <div className="space-y-10">
             <div>
-              <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-4">Destinations</h4>
-              <div className="space-y-2">
+              <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-5">Destinations</h4>
+              <div className="space-y-3">
                 {['Europe', 'Asia', 'North America', 'South America'].map((dest, i) => (
                   <label key={i} className="flex items-center gap-3 cursor-pointer group">
-                    <input className="rounded border-slate-300 text-primary focus:ring-primary bg-transparent" type="checkbox" defaultChecked={dest === 'Europe'} />
-                    <span className="text-sm group-hover:text-primary transition-colors">{dest}</span>
+                    <input className="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary bg-transparent transition-all" type="checkbox" defaultChecked={dest === 'Europe'} />
+                    <span className="text-sm font-bold text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors">{dest}</span>
                   </label>
                 ))}
               </div>
             </div>
             <div>
-              <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-4">Duration</h4>
+              <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-5">Duration</h4>
               <div className="flex flex-wrap gap-2">
-                <button className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-medium">3-5 Days</button>
-                <button className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium hover:bg-primary/10">1 Week</button>
-                <button className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium hover:bg-primary/10">2 Weeks+</button>
+                {['3-5 Days', '1 Week', '2 Weeks+'].map((range, i) => (
+                  <button key={i} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${i === 0 ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-primary/10'}`}>
+                    {range}
+                  </button>
+                ))}
               </div>
             </div>
             <div>
-              <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-4">Price Range</h4>
-              <div className="relative w-full h-1 bg-slate-200 dark:bg-slate-700 rounded-full mb-6">
-                <div className="absolute left-0 right-1/4 h-full bg-primary rounded-full"></div>
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-md cursor-pointer"></div>
-                <div className="absolute right-1/4 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-md cursor-pointer"></div>
-              </div>
-              <div className="flex justify-between text-xs font-medium">
-                <span>$500</span>
-                <span>$5000</span>
+              <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-5">Price Range</h4>
+              <div className="px-1">
+                <div className="relative w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full mb-6">
+                  <div className="absolute left-0 right-1/4 h-full bg-primary rounded-full"></div>
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-5 h-5 bg-white border-2 border-primary rounded-full shadow-lg cursor-pointer hover:scale-120 transition-transform"></div>
+                  <div className="absolute right-1/4 top-1/2 -translate-y-1/2 w-5 h-5 bg-white border-2 border-primary rounded-full shadow-lg cursor-pointer hover:scale-120 transition-transform"></div>
+                </div>
+                <div className="flex justify-between text-[10px] font-black uppercase tracking-tighter text-slate-400">
+                  <span>$500</span>
+                  <span>$5000</span>
+                </div>
               </div>
             </div>
           </div>
-          <button className="w-full mt-8 flex items-center justify-center rounded-lg h-11 bg-primary text-white text-sm font-bold tracking-wide hover:bg-opacity-90 transition-all">
-            Apply Filters
+          <button className="w-full mt-10 flex items-center justify-center rounded-2xl h-14 bg-primary text-white text-sm font-black tracking-widest hover:bg-opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-primary/20">
+            APPLY FILTERS
           </button>
         </div>
-      </aside>
+      </motion.aside>
 
       <div className="flex-1 flex flex-col gap-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
@@ -122,32 +131,56 @@ const Listing = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <motion.div 
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.1 }
+            }
+          }}
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
+        >
           {listingPackages.map((pkg) => (
-            <div key={pkg.id} className="flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden group hover:shadow-xl transition-all">
-              <div className="relative h-48 w-full overflow-hidden">
-                <img className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" src={pkg.image} alt={pkg.title} />
-                <div className="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-primary flex items-center gap-1">
-                  <span className="material-symbols-outlined text-xs fill-1">star</span> {pkg.rating}
+            <motion.div 
+              key={pkg.id} 
+              variants={{
+                hidden: { y: 20, opacity: 0 },
+                visible: { y: 0, opacity: 1, transition: { duration: 0.5 } }
+              }}
+              whileHover={{ y: -10 }}
+              className="flex flex-col bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden group hover:shadow-2xl transition-all duration-500"
+            >
+              <div className="relative h-56 w-full overflow-hidden">
+                <img className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" src={pkg.image} alt={pkg.title} />
+                <div className="absolute top-4 right-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-xl text-xs font-black text-primary flex items-center gap-1.5 shadow-lg">
+                  <span className="material-symbols-outlined text-sm fill-1 text-yellow-500">star</span> {pkg.rating}
                 </div>
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
-              <div className="p-5 flex flex-col flex-1">
-                <h3 className="text-lg font-bold leading-tight group-hover:text-primary transition-colors mb-2">{pkg.title}</h3>
-                <div className="flex items-center gap-2 text-slate-500 text-sm mb-4">
-                  <span className="material-symbols-outlined text-sm">schedule</span>
-                  <span>{pkg.duration}</span>
-                </div>
-                <div className="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4">
-                  <div>
-                    <p className="text-xs text-slate-500">From</p>
-                    <p className="text-lg font-bold text-primary">{pkg.price}</p>
+              <div className="p-6 flex flex-col flex-1">
+                <h3 className="text-xl font-black leading-tight group-hover:text-primary transition-colors mb-4">{pkg.title}</h3>
+                <div className="flex items-center gap-3 text-slate-500 text-sm mb-6">
+                  <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/50 px-2 py-1 rounded-md">
+                    <span className="material-symbols-outlined text-sm">schedule</span>
+                    <span className="font-bold">{pkg.duration}</span>
                   </div>
-                  <Link to="/details" className="px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-bold hover:bg-primary hover:text-white transition-all">View Details</Link>
+                </div>
+                <div className="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-6">
+                  <div>
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">From</p>
+                    <p className="text-2xl font-black text-primary tracking-tight">{pkg.price}</p>
+                  </div>
+                  <Link to="/details" className="bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg shadow-primary/20">
+                    <span className="material-symbols-outlined">arrow_forward</span>
+                  </Link>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         <div className="flex items-center justify-center py-10">
           <nav className="flex items-center gap-1">

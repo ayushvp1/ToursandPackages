@@ -10,23 +10,55 @@ const Home = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
-        <div 
+      {/* Hero Section */}
+      <section className="relative h-[85vh] flex items-center justify-center overflow-hidden">
+        <motion.div 
+          initial={{ scale: 1.2, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
           className="absolute inset-0 bg-cover bg-center" 
           style={{ 
             backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuDvJyVEjiWsCjGyQCJoJOKZ5tLzaPDpFYPLCB7Vv-0Zm6pH84GI-PrpwnAjhQLox3yG8MK_LwqPKzkq2_gMRMpsTeRQaRBn_QEosONchZTiD3-MKQR-otLe2_rhjF4GS8PyruZOog_y9sDV7kRc57zOyme_Y-VL5YlOnbVjMVdaXtjKHLVMPVhEm8NVmV7SDIZczpUG5Ppbk5wefQndrfl87GyRvAd3BOBY-MY6fDcU003Dd412hTANhSObZgXg2pso3-FhRokK6r0')",
             backgroundAttachment: "fixed"
           }}
-        ></div>
+        ></motion.div>
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <h2 className="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">Your Gateway to Extraordinary Adventures</h2>
-          <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto">Experience the world like never before with our professionally curated travel packages designed for the bold.</p>
-          <button className="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-lg text-lg font-bold shadow-xl transition-all">Explore Tours</button>
+          <motion.h2 
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight"
+          >
+            Your Gateway to <span className="text-secondary italic">Extraordinary</span> Adventures
+          </motion.h2>
+          <motion.p 
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.7 }}
+            className="text-lg md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto font-medium"
+          >
+            Experience the world like never before with our professionally curated travel packages designed for the bold.
+          </motion.p>
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 1 }}
+          >
+            <button className="group relative overflow-hidden bg-primary text-white px-10 py-5 rounded-full text-xl font-bold shadow-2xl transition-all hover:scale-105 active:scale-95">
+              <span className="relative z-10">Explore Tours</span>
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+            </button>
+          </motion.div>
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto -mt-12 relative z-20 px-4">
-        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl p-6 grid grid-cols-1 md:grid-cols-4 gap-4 border border-slate-100 dark:border-slate-800">
+      <section className="max-w-6xl mx-auto -mt-20 relative z-20 px-4">
+        <motion.div 
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 1.2, type: "spring", stiffness: 100 }}
+          className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-2xl p-8 grid grid-cols-1 md:grid-cols-4 gap-6 border border-white/20"
+        >
           <div className="flex flex-col gap-2">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Destination</label>
             <div className="relative">
@@ -58,25 +90,52 @@ const Home = () => {
               <span className="material-symbols-outlined">search</span> Search
             </button>
           </div>
-        </div>
+        </motion.div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-4 py-20">
-        <div className="flex justify-between items-end mb-12">
+      <section className="max-w-7xl mx-auto px-4 py-32">
+        <motion.div 
+          initial={{ y: 40, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6"
+        >
           <div>
-            <h3 className="text-3xl font-bold mb-2">Featured Experiences</h3>
-            <p className="text-slate-600 dark:text-slate-400">Hand-picked destinations for your next escape.</p>
+            <motion.h3 
+              initial={{ x: -50, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              className="text-4xl font-black mb-4"
+            >
+              Featured Experiences
+            </motion.h3>
+            <p className="text-slate-600 dark:text-slate-400 text-lg">Hand-picked destinations for your next escape.</p>
           </div>
-          <div className="flex gap-2">
-            <button className="p-2 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">
+          <div className="flex gap-3">
+            <button className="w-12 h-12 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-primary hover:text-white transition-all duration-300 flex items-center justify-center">
               <span className="material-symbols-outlined">chevron_left</span>
             </button>
-            <button className="p-2 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">
+            <button className="w-12 h-12 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-primary hover:text-white transition-all duration-300 flex items-center justify-center">
               <span className="material-symbols-outlined">chevron_right</span>
             </button>
           </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        </motion.div>
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.2
+              }
+            }
+          }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-10"
+        >
           {[
             {
               title: "Swiss Alps Discovery",
@@ -103,37 +162,75 @@ const Home = () => {
               image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBrCnpr7VJC1qM5mk21z4d8tMd_x5TGuqH93w_aturOToIIIeHM1Ys63TMEIxpN38IC3W9HyXCAZT8zHXZtuRlTHaRFQ6H8gZUOIx-sp0mYxEk9sYrEG6y-PYav0Mb9gNPLoGj-FeP_DrBKCURArn8x7bF3xSWbvwXpx8o_GGk_9iuHdlSiuY5QbdvFzZkUvqZIRKxkGrRq29hkrrtVRcVPprFPcR-D5VdevEX7TIHVyazU6HAYKm8zu7n8UBPnutExPXlJxgxTf9c"
             }
           ].map((item, idx) => (
-            <div key={idx} className="group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-100 dark:border-slate-800">
-              <div className="relative h-64 overflow-hidden">
-                <img className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src={item.image} alt={item.title}/>
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-primary">{item.days} Days</div>
+            <motion.div 
+              key={idx} 
+              variants={{
+                hidden: { y: 50, opacity: 0 },
+                visible: { y: 0, opacity: 1, transition: { duration: 0.6 } }
+              }}
+              whileHover={{ y: -10 }}
+              className="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-100 dark:border-slate-800"
+            >
+              <div className="relative h-72 overflow-hidden">
+                <img className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" src={item.image} alt={item.title}/>
+                <div className="absolute top-5 right-5 bg-white/95 backdrop-blur px-4 py-2 rounded-full text-xs font-black text-primary shadow-lg">{item.days} Days</div>
+                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <span className="text-white font-bold text-sm tracking-wide">VIEW EXPEDITION</span>
+                </div>
               </div>
-              <div className="p-6">
-                <h4 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{item.title}</h4>
-                <div className="flex items-center gap-1 text-yellow-500 mb-4">
+              <div className="p-8">
+                <h4 className="text-2xl font-black mb-3 group-hover:text-primary transition-colors">{item.title}</h4>
+                <div className="flex items-center gap-1 text-yellow-500 mb-6">
                   {[...Array(5)].map((_, i) => (
                     <span key={i} className={`material-symbols-outlined text-sm ${i < Math.floor(item.rating) ? 'fill-1' : ''}`}>star</span>
                   ))}
-                  <span className="text-xs text-slate-500 ml-1">({item.reviews} reviews)</span>
+                  <span className="text-xs text-slate-500 ml-2 font-bold uppercase tracking-widest">({item.reviews} reviews)</span>
                 </div>
-                <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-4">
-                  <span className="text-2xl font-black text-primary">{item.price}</span>
-                  <Link to="/details" className="text-sm font-bold underline hover:no-underline text-secondary">Details</Link>
+                <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-6">
+                  <div className="flex flex-col">
+                    <span className="text-xs text-slate-400 font-bold uppercase tracking-tighter">Starting at</span>
+                    <span className="text-3xl font-black text-primary leading-none">{item.price}</span>
+                  </div>
+                  <Link to="/details" className="bg-secondary text-white w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg shadow-secondary/20">
+                    <span className="material-symbols-outlined">arrow_forward</span>
+                  </Link>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       <TravelWidget />
 
-      <section className="bg-primary/5 dark:bg-primary/10 py-24">
-        <div className="max-w-7xl mx-auto px-4 text-center mb-16">
-          <h3 className="text-3xl font-bold mb-4">What Our Explorers Say</h3>
-          <div className="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+      <section className="bg-slate-50 dark:bg-slate-900/50 py-32 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 mb-20 relative">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="absolute -top-10 left-1/2 -translate-x-1/2 text-[12rem] font-black text-slate-100 dark:text-slate-800/10 pointer-events-none select-none"
+          >
+            STORY
+          </motion.div>
+          <div className="relative z-10 text-center">
+            <h3 className="text-4xl font-black mb-6">What Our Explorers Say</h3>
+            <div className="w-24 h-1.5 bg-secondary mx-auto rounded-full"></div>
+          </div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.3 }
+            }
+          }}
+          className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10"
+        >
           {[
             {
               name: "Sarah Jenkins",
@@ -154,19 +251,32 @@ const Home = () => {
               img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAwaIVBDmN2OO2qww5S_0LJr-jyvSGrI_-MaKTgboUQIbt3NnPZ9BS4pIbofUp0lqynkA2p64uWbS2Vk4oonSh70mwAG5Qug5BtBqkfeVcvSuN47heI9gdp2yqqRklnKkmxlQHsPUf42Bd7RR4eA73Ar4M3S5dFeqm5tZI6-MTWWV-w8MkhrF895m7OEri6LEpNcRH9UHbwHV7IFO4cG3zwURyjflnV__oMXBFZveb-pbm_AwmFnrovwB3U6x23GKuGnkOGVoGjsI4"
             }
           ].map((item, idx) => (
-            <div key={idx} className="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 relative">
-              <span className="material-symbols-outlined text-primary/20 text-6xl absolute top-4 right-6">format_quote</span>
-              <div className="flex items-center gap-4 mb-6">
-                <img className="w-14 h-14 rounded-full object-cover" src={item.img} alt={item.name}/>
+            <motion.div 
+              key={idx} 
+              variants={{
+                hidden: { y: 30, opacity: 0, scale: 0.95 },
+                visible: { y: 0, opacity: 1, scale: 1, transition: { duration: 0.8, ease: "easeOut" } }
+              }}
+              whileHover={{ scale: 1.02 }}
+              className="group bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700 relative"
+            >
+              <span className="material-symbols-outlined text-primary/10 text-8xl absolute top-6 right-8 group-hover:text-primary/20 transition-colors duration-500">format_quote</span>
+              <div className="flex items-center gap-5 mb-8 relative z-10">
+                <div className="relative">
+                  <img className="w-16 h-16 rounded-full object-cover ring-4 ring-slate-50 dark:ring-slate-900 shadow-lg" src={item.img} alt={item.name}/>
+                  <div className="absolute -bottom-1 -right-1 bg-secondary w-6 h-6 rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-[10px] text-white">verified</span>
+                  </div>
+                </div>
                 <div>
-                  <h5 className="font-bold">{item.name}</h5>
-                  <p className="text-xs text-slate-500">{item.tour}</p>
+                  <h5 className="font-black text-lg">{item.name}</h5>
+                  <p className="text-xs text-primary font-bold tracking-tighter uppercase">{item.tour}</p>
                 </div>
               </div>
-              <p className="text-slate-600 dark:text-slate-400 italic">"{item.text}"</p>
-            </div>
+              <p className="text-slate-600 dark:text-slate-400 italic text-lg leading-relaxed relative z-10">"{item.text}"</p>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
     </motion.div>
   )

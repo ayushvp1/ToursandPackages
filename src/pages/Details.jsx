@@ -9,24 +9,51 @@ const Details = () => {
       exit={{ opacity: 0 }}
       className="w-full max-w-7xl mx-auto px-4 md:px-8 py-10"
     >
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="md:col-span-3 h-[400px] md:h-[500px] rounded-2xl overflow-hidden relative group">
-          <div className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBmNtcU8ujktdBtlm4SKSSJZvt86A9iAmosqoZn7ReYhON7dIIDDsYvN_KC7TbOpP7H1O3mkN29Olfm9UlOy9k3YOuAQJSeRCVSQePSFSerIYnrAeYz7DTa_yktmWstQlj13L5vlmMZOQGBP1M8cM2NJo_ZeJR20QfQ3xEY3GZtM5xh-d03YRfNfnfZom7qySXdCuAsjnH0F1fj9XmO9ME56m_3aULdpnjLoEqrHYqcXebr4vGp4KCb63XfG4R9KeBkoEaTrjOyfMc')" }}></div>
-          <div className="absolute bottom-6 right-6 flex gap-2">
-            <button className="bg-white/90 backdrop-blur px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-2 shadow-xl hover:bg-white transition-all">
-              <span className="material-symbols-outlined text-lg">grid_view</span> View all 24 photos
+      <motion.div 
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.15 }
+          }
+        }}
+        className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12"
+      >
+        <motion.div 
+          variants={{
+            hidden: { scale: 0.9, opacity: 0 },
+            visible: { scale: 1, opacity: 1, transition: { duration: 0.8, ease: "easeOut" } }
+          }}
+          className="md:col-span-3 h-[450px] md:h-[600px] rounded-3xl overflow-hidden relative group shadow-2xl"
+        >
+          <div className="w-full h-full bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBmNtcU8ujktdBtlm4SKSSJZvt86A9iAmosqoZn7ReYhON7dIIDDsYvN_KC7TbOpP7H1O3mkN29Olfm9UlOy9k3YOuAQJSeRCVSQePSFSerIYnrAeYz7DTa_yktmWstQlj13L5vlmMZOQGBP1M8cM2NJo_ZeJR20QfQ3xEY3GZtM5xh-d03YRfNfnfZom7qySXdCuAsjnH0F1fj9XmO9ME56m_3aULdpnjLoEqrHYqcXebr4vGp4KCb63XfG4R9KeBkoEaTrjOyfMc')" }}></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60"></div>
+          <div className="absolute bottom-8 right-8 flex gap-2">
+            <button className="bg-white/95 backdrop-blur-md px-6 py-4 rounded-2xl text-sm font-black flex items-center gap-3 shadow-2xl hover:bg-primary hover:text-white transition-all duration-300">
+              <span className="material-symbols-outlined text-lg">grid_view</span> VIEW GALLERY
             </button>
           </div>
+        </motion.div>
+        <div className="hidden md:flex flex-col gap-6">
+          {[
+            "https://lh3.googleusercontent.com/aida-public/AB6AXuC_UIZe9T9q07dTeZplQo-MIW2ccz_6Kazh-17l_iTxF2ZlFpw25d8T79j7cPRr0SpGZSqRnC9An2uqUBBHUQ6jOnFPS_lH_fA54bQjM5GV-wGqz2pXpXKIVED7zpoHxpMOJwK7cNalg-dPpv31DCrX3tjI-TJ2RueTLIGTtk1DbO9S-BVS7UY4Jlsr371696hIHgeMdqi_mKT-HDw5_UhNyeMJFERhDOGFocIZPoU29jNLBHNoegzkUXD0GRvPsNjy5HpFf06EF2s",
+            "https://lh3.googleusercontent.com/aida-public/AB6AXuBqSfJ2EpAqEEujlJmJgr1XJVjfnDt24r2gDO6kthtYc1G4zbDMcLlu8sAZLCeCfo5dABPnkNSrrtGv6AUwPQRCAw3F_kiQRoPQvuErdQH8ZEDHRHumYN6gl8enHZukOOf2kT4tMNtO8guK6--cwtgUm9no8EhBpwngS7qdOTPsqRqmOBqOGUSH7_yq9Wl-cWJ5SUCLzL7NhxPeKRKKKZM8jn9qFlgVIsxBAjq1VXYBCGXWsh9i1AECYZFXFhMgBepuLZyJHK_WLg"
+          ].map((img, i) => (
+            <motion.div 
+              key={i}
+              variants={{
+                hidden: { x: 50, opacity: 0 },
+                visible: { x: 0, opacity: 1, transition: { duration: 0.8, delay: 0.2 * i } }
+              }}
+              className="flex-1 rounded-3xl overflow-hidden shadow-xl"
+            >
+              <div className="w-full h-full bg-cover bg-center transition-transform hover:scale-110 duration-700" style={{ backgroundImage: `url('${img}')` }}></div>
+            </motion.div>
+          ))}
         </div>
-        <div className="hidden md:flex flex-col gap-4">
-          <div className="flex-1 rounded-2xl overflow-hidden">
-            <div className="w-full h-full bg-cover bg-center transition-transform hover:scale-110 duration-500" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuC_UIZe9T9q07dTeZplQo-MIW2ccz_6Kazh-17l_iTxF2ZlFpw25d8T79j7cPRr0SpGZSqRnC9An2uqUBBHUQ6jOnFPS_lH_fA54bQjM5GV-wGqz2pXpXKIVED7zpoHxpMOJwK7cNalg-dPpv31DCrX3tjI-TJ2RueTLIGTtk1DbO9S-BVS7UY4Jlsr371696hIHgeMdqi_mKT-HDw5_UhNyeMJFERhDOGFocIZPoU29jNLBHNoegzkUXD0GRvPsNjy5HpFf06EF2s')" }}></div>
-          </div>
-          <div className="flex-1 rounded-2xl overflow-hidden">
-            <div className="w-full h-full bg-cover bg-center transition-transform hover:scale-110 duration-500" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBqSfJ2EpAqEEujlJmJgr1XJVjfnDt24r2gDO6kthtYc1G4zbDMcLlu8sAZLCeCfo5dABPnkNSrrtGv6AUwPQRCAw3F_kiQRoPQvuErdQH8ZEDHRHumYN6gl8enHZukOOf2kT4tMNtO8guK6--cwtgUm9no8EhBpwqngS7qdOTPsqRqmOBqOGUSH7_yq9Wl-cWJ5SUCLzL7NhxPeKRKKKZM8jn9qFlgVIsxBAjq1VXYBCGXWsh9i1AECYZFXFhMgBepuLZyJHK_WLg')" }}></div>
-          </div>
-        </div>
-      </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2">
@@ -43,13 +70,32 @@ const Details = () => {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-4 mb-10">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: { staggerChildren: 0.1 }
+              }
+            }}
+            className="flex flex-wrap gap-4 mb-10"
+          >
             {[
               { label: "Duration", val: "8 Days", icon: "calendar_today" },
               { label: "Group Size", val: "Max 12", icon: "group" },
               { label: "Availability", val: "High", icon: "check_circle", color: "text-green-600" }
             ].map((stat, i) => (
-              <div key={i} className="flex items-center gap-4 bg-white dark:bg-slate-900 px-6 py-5 rounded-2xl border border-slate-100 dark:border-slate-800 flex-1 min-w-[180px] shadow-sm">
+              <motion.div 
+                key={i} 
+                variants={{
+                  hidden: { y: 20, opacity: 0 },
+                  visible: { y: 0, opacity: 1 }
+                }}
+                className="flex items-center gap-4 bg-white dark:bg-slate-900 px-6 py-5 rounded-2xl border border-slate-100 dark:border-slate-800 flex-1 min-w-[180px] shadow-sm hover:shadow-md transition-shadow cursor-default"
+              >
                 <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center">
                   <span className="material-symbols-outlined text-primary text-2xl">{stat.icon}</span>
                 </div>
@@ -57,9 +103,9 @@ const Details = () => {
                   <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest mb-1">{stat.label}</p>
                   <p className={`text-base font-bold text-slate-900 dark:text-white ${stat.color || ''}`}>{stat.val}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           <div className="border-b border-slate-200 dark:border-slate-800 mb-10 sticky top-[64px] bg-background-light/95 dark:bg-background-dark/95 backdrop-blur z-30 pt-4">
             <div className="flex gap-10">
@@ -79,26 +125,45 @@ const Details = () => {
           </section>
 
           <section className="mb-14 scroll-mt-32" id="itinerary">
-            <h3 className="text-2xl font-bold mb-8">Day-by-Day Itinerary</h3>
+            <motion.h3 
+              initial={{ x: -20, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              className="text-2xl font-bold mb-8 flex items-center gap-3"
+            >
+              <div className="w-2 h-8 bg-primary rounded-full"></div>
+              Day-by-Day Itinerary
+            </motion.h3>
             <div className="space-y-8">
               {[
                 { day: "01", title: "Arrival in Athens", icon: "flight_land", desc: "Transfer to your boutique hotel in the Plaka district. Meet your guide for a welcome dinner overlooking the illuminated Parthenon." },
                 { day: "02", title: "The Glory of the Acropolis", icon: "museum", desc: "Private guided tour of the Parthenon, Erechtheion, and the New Acropolis Museum. Afternoon at leisure for exploring the Monastiraki flea market." },
                 { day: "03", title: "Athens to Mykonos", icon: "directions_boat", desc: "Board a high-speed ferry to Mykonos. Evening walk through the labyrinthine streets of Chora and sunset cocktails at Little Venice." }
               ].map((item, i) => (
-                <div key={i} className="relative pl-12">
-                  <div className="absolute left-0 top-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-black z-10 shadow-lg ring-4 ring-background-light dark:ring-background-dark">
+                <motion.div 
+                  key={i} 
+                  initial={{ opacity: 0, x: 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.6, delay: i * 0.1 }}
+                  className="relative pl-12 group"
+                >
+                  <div className="absolute left-0 top-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-black z-10 shadow-lg ring-4 ring-background-light dark:ring-background-dark group-hover:scale-125 transition-transform">
                     {item.day}
                   </div>
                   {i < 2 && <div className="absolute left-4 top-8 bottom-[-32px] w-px bg-slate-200 dark:bg-slate-800"></div>}
-                  <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                    <h4 className="text-lg font-bold flex items-center justify-between mb-4">
+                  <motion.div 
+                    whileHover={{ x: 10 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300"
+                  >
+                    <h4 className="text-xl font-black flex items-center justify-between mb-4">
                       {item.title}
-                      <span className="material-symbols-outlined text-slate-400 text-xl">{item.icon}</span>
+                      <span className="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors text-2xl">{item.icon}</span>
                     </h4>
-                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{item.desc}</p>
-                  </div>
-                </div>
+                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">{item.desc}</p>
+                  </motion.div>
+                </motion.div>
               ))}
             </div>
           </section>
