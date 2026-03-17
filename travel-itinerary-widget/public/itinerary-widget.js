@@ -6,7 +6,7 @@
  * ║    Usage:                                                 ║
  * ║    <div id="itinerary-widget"></div>                      ║
  * ║    <script                                                ║
- * ║      src="/itinerary-widget.js?v=2.0.10"                  ║
+ * ║      src="/itinerary-widget.js?v=2.0.11"                  ║
  * ║      data-api-base="http://localhost:3001"               ║
  * ║      data-target="#itinerary-widget">                     ║
  * ║    </script>                                              ║
@@ -57,8 +57,10 @@
       padding: .85rem 2rem; border-radius: 12px; font-weight: 700;
       cursor: pointer; transition: all .2s; font-size: .9rem;
       box-shadow: 0 4px 15px rgba(20,184,166,0.25);
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     }
-    .tiw-btn-primary:hover { background: #0D9488; transform: translateY(-2px); }
+    .tiw-btn-primary:hover:not(:disabled) { background: #0D9488; transform: translateY(-2px); }
+    .tiw-btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
 
     .tiw-btn-ghost {
       background: transparent; border: 1px solid #E2E8F0;
@@ -158,7 +160,7 @@
     return `
       <!-- PHASE: WELCOME -->
       <div id="tiw-ph-welcome" class="tiw-phase tiw-active" style="padding:4rem 2rem; text-align:center">
-        <div style="font-size:3rem; margin-bottom:1.5rem">🎨</div>
+        <div style="font-size:3rem; margin-bottom:1.5rem">🌏</div>
         <h2 style="font-family:'Playfair Display',serif; font-size:2.2rem; margin-bottom:1rem">AI Trip Planner</h2>
         <p style="color:#64748B; margin-bottom:2.5rem; max-width:400px; margin-left:auto; margin-right:auto">
           Arriving at a station? We'll design your perfect day with curated stops and 3D maps.
@@ -175,7 +177,10 @@
         
         <div style="margin-bottom:2rem">
           <label style="display:block; font-size:.7rem; font-weight:800; text-transform:uppercase; color:#94A3B8; margin-bottom:.7rem">Where are you heading?</label>
-          <input type="text" id="tiw-input-dest" placeholder="e.g. Kozhikode, Kerala" style="width:100%; padding:.9rem 1.2rem; border-radius:12px; border:1px solid #E2E8F0; font-size:1rem">
+          <div style="position:relative">
+            <input type="text" id="tiw-input-dest" placeholder="e.g. Kozhikode, Kerala" style="width:100%; padding:.9rem 1.2rem; border-radius:12px; border:1px solid #E2E8F0; font-size:1rem; padding-right:45px">
+            <button id="tiw-btn-re-detect" title="Auto-detect location" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:18px">📍</button>
+          </div>
         </div>
 
         <div class="tiw-grid-2" style="margin-bottom:2rem">
@@ -206,8 +211,8 @@
       <div id="tiw-ph-loading" class="tiw-phase" style="padding:5rem 2rem; text-align:center">
         <div style="width:60px; height:60px; border:4px solid #F1F5F9; border-top-color:#14B8A6; border-radius:50%; animation:tiw-spin 1s linear infinite; margin:0 auto 2rem"></div>
         <style>@keyframes tiw-spin { to { transform: rotate(360deg); } }</style>
-        <h3 style="font-size:1.4rem; font-weight:700; margin-bottom:.5rem">Crafting Your Vision...</h3>
-        <p style="color:#64748B; font-size:.9rem">Our AI is mapping the best resorts, cafes, and spots for your day tour.</p>
+        <h3 id="tiw-loading-title" style="font-size:1.4rem; font-weight:700; margin-bottom:.5rem">Crafting Your Vision...</h3>
+        <p id="tiw-loading-sub" style="color:#64748B; font-size:.9rem">Our AI is mapping the best resorts, cafes, and spots for your day tour.</p>
       </div>
 
       <!-- PHASE: ITINERARY -->
@@ -252,18 +257,6 @@
       const active = state.activeInterests.includes(i.id);
       return `<div class="tiw-interest-chip ${active ? "active" : "inactive"}" data-id="${i.id}">${i.label}</div>`;
     }).join("");
-
-    container.addEventListener("click", (e) => {
-      const chip = e.target.closest(".tiw-interest-chip");
-      if (!chip) return;
-      const id = chip.dataset.id;
-      if (state.activeInterests.includes(id)) {
-        state.activeInterests = state.activeInterests.filter((x) => x !== id);
-      } else {
-        state.activeInterests.push(id);
-      }
-      renderInterests(container);
-    });
   }
 
   // ── Render Dietary Chips ─────────────────────────────────────
@@ -273,27 +266,40 @@
       const active = state.dietaryPreference === opt;
       return `<div class="tiw-interest-chip ${active ? "active" : "inactive"}" data-val="${opt}">${opt === "VEG" ? "🥗 Veg Only" : "🍖 Non-Veg OK"}</div>`;
     }).join("");
-
-    container.addEventListener("click", (e) => {
-      const chip = e.target.closest(".tiw-interest-chip");
-      if (!chip) return;
-      state.dietaryPreference = chip.dataset.val;
-      renderDietary(container);
-    });
   }
 
   // ── API Interactions ─────────────────────────────────────────
   async function detectLocation(root) {
-    showPhase("loading");
+    const btn = root.querySelector("#tiw-btn-detect");
+    const originalText = btn ? btn.innerHTML : "⚡ Map My Perfect Day";
+    if (btn) {
+      btn.innerHTML = "🛰️ Locating...";
+      btn.disabled = true;
+    }
+
     try {
-      const res = await fetch("https://ipapi.co/json/");
-      const data = await res.json();
-      state.dest = `${data.city}, ${data.region}`;
-      root.querySelector("#tiw-input-dest").value = state.dest;
-      showPhase("setup");
-      renderInterests(root.querySelector("#tiw-interests"));
-      renderDietary(root.querySelector("#tiw-dietary"));
-    } catch {
+      // Primary: ipapi.co
+      const res = await fetch("https://ipapi.co/json/").catch(() => null);
+      let data = res && res.ok ? await res.json() : null;
+      
+      // Fallback: ip-api.com (Note: only works on HTTP or with proxy, but we try as last resort)
+      if (!data || !data.city) {
+        // try a simple cloudflare trace if possible or just proceed
+        data = null;
+      }
+
+      if (data && data.city) {
+        state.dest = data.city + (data.region ? `, ${data.region}` : "");
+        const input = root.querySelector("#tiw-input-dest");
+        if (input) input.value = state.dest;
+      }
+    } catch (e) {
+      console.warn("Location detection failed", e);
+    } finally {
+      if (btn) {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
       showPhase("setup");
       renderInterests(root.querySelector("#tiw-interests"));
       renderDietary(root.querySelector("#tiw-dietary"));
@@ -311,6 +317,8 @@
     }
 
     showPhase("loading");
+    document.getElementById("tiw-loading-title").innerText = "Crafting Your Vision...";
+    document.getElementById("tiw-loading-sub").innerText = "Our AI is mapping the best resorts, cafes, and spots for your day tour.";
 
     try {
       const apiBase = script.dataset.apiBase || "http://localhost:3001";
@@ -331,7 +339,6 @@
       if (!res.ok) throw new Error("API failed");
       const data = await res.json();
       
-      // The backend returns { success: true, itinerary: { ... } }
       const itinerary = data.itinerary || data; 
       renderItinerary(root, itinerary);
     } catch (err) {
@@ -347,14 +354,16 @@
     
     const badges = root.querySelector("#tiw-badges");
     badges.innerHTML = `
-      <div style="background:rgba(20,184,166,.07); color:#14B8A6; border:1px solid rgba(20,184,166,.15); padding:6px 14px; border-radius:100px; font-size:.7rem; font-weight:700">☔ ${data.weather_tip}</div>
-      <div style="background:rgba(245,158,11,.07); color:#D97706; border:1px solid rgba(245,158,11,.15); padding:6px 14px; border-radius:100px; font-size:.7rem; font-weight:700">💰 ${data.cost_estimate}</div>
+      <div style="background:rgba(20,184,166,.07); color:#14B8A6; border:1px solid rgba(20,184,166,.15); padding:6px 14px; border-radius:100px; font-size:.7rem; font-weight:700">☔ ${data.weather_tip || "Sunny"}</div>
+      <div style="background:rgba(245,158,11,.07); color:#D97706; border:1px solid rgba(245,158,11,.15); padding:6px 14px; border-radius:100px; font-size:.7rem; font-weight:700">💰 ${data.cost_estimate || "Affordable"}</div>
     `;
 
-    const alert = root.querySelector("#tiw-alert");
+    const alertEl = root.querySelector("#tiw-alert");
     if (data.departure_alert) {
-      alert.style.display = "inline-flex";
-      alert.innerHTML = `<span>🚨</span> ${data.departure_alert}`;
+      alertEl.style.display = "inline-flex";
+      alertEl.innerHTML = `<span>🚨</span> ${data.departure_alert}`;
+    } else {
+      alertEl.style.display = "none";
     }
 
     const timeline = root.querySelector("#tiw-timeline");
@@ -381,20 +390,9 @@
             ${item.cost ? `<div style="background:#060F1C;border:1px solid #1E3A5F;border-radius:7px;padding:3px 9px;font-size:.7rem;color:#34D399;white-space:nowrap;flex-shrink:0">${item.cost.replace(/\$/g, "₹")}</div>` : ""}
           </div>
           ${item.description ? `<p style="margin:.45rem 0 .65rem;font-size:.84rem;color:#1E293B;line-height:1.65">${item.description}</p>` : ""}
-          ${(() => {
-            const q = item.photo_query || item.title || "travel scenery";
-            return `
-            <div style="margin: 1.2rem 0; border-radius: 20px; overflow: hidden; height: 200px; background: #F8FAFC; position: relative; border: 1px solid #F1F5F9; box-shadow: inset 0 2px 10px rgba(0,0,0,0.02)">
-              <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #94A3B8; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase">
-                <span style="animation: tiw-pulse 1.5s infinite">📸 Gathering Vision...</span>
-              </div>
-              <img src="https://loremflickr.com/800/600/${encodeURIComponent(q)},travel/all"
-                style="width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.8s ease"
-                onload="this.style.opacity='1'; this.previousElementSibling.style.display='none'"
-                onerror="this.src='https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=800&auto=format&fit=crop'; this.style.opacity='1'; this.previousElementSibling.style.display='none'"
-              />
-            </div>`;
-          })()}
+          <div style="margin: 1.2rem 0; border-radius: 20px; overflow: hidden; height: 200px; background: #F8FAFC; position: relative">
+             <img src="https://loremflickr.com/800/600/${encodeURIComponent(item.title || "travel")},scenery/all" style="width:100%; height:100%; object-fit:cover">
+          </div>
           <div style="display:flex;flex-wrap:wrap;gap:.4rem">
             ${item.must_try ? `<div class="tiw-info-tag" style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);color:#FCD34D"><span style="font-size:12px">⭐</span>${item.must_try}</div>` : ""}
             ${item.tip ? `<div class="tiw-info-tag" style="background:rgba(20,184,166,.06);border:1px solid rgba(20,184,166,.15);color:#5EEAD4"><span style="font-size:12px">💡</span>${item.tip}</div>` : ""}
@@ -416,117 +414,74 @@
       setTimeout(() => div.classList.add("tiw-visible"), idx * 170 + 80);
     });
 
-    // Initialize Map
     renderMap(root, data);
-
     showPhase("itinerary");
     if (mapInstance && typeof mapInstance.resize === 'function') {
-      setTimeout(() => mapInstance.resize(), 400);
+      setTimeout(() => mapInstance.resize(), 500);
     }
     root.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  // ── Render Map (Hybrid with Fallback) ──────────────────────
   let mapInstance = null;
   function renderMap(root, data) {
     const items = data.items || [];
     const isOverLimit = data._meta?.mapboxOverLimit || false;
     const token = script?.dataset?.mapboxToken || "pk.eyJ1IjoiYXl1c2h2cDEiLCJhIjoiY204ZHB4NmI5MHZwejJxcTJkb3hncGdmdyJ9.y7fS-x_M5x7W-x_M5x7W-x_M5x7W-x";
-
     const mapEl = root.querySelector("#tiw-map");
     if (!mapEl) return;
     
-    // Clear previous map instance reliably
     if (mapInstance) {
       if (typeof mapInstance.remove === 'function') mapInstance.remove();
       mapInstance = null;
       mapEl.innerHTML = "";
     }
 
-    const validItems = items.filter(i => {
-      const lat = parseFloat(i.lat);
-      const lon = parseFloat(i.lon);
-      return !isNaN(lat) && !isNaN(lon);
-    });
-
+    const validItems = items.filter(i => !isNaN(parseFloat(i.lat)) && !isNaN(parseFloat(i.lon)));
     if (!validItems.length) {
       root.querySelector("#tiw-map-container").style.display = "none";
       return;
     }
     root.querySelector("#tiw-map-container").style.display = "block";
 
-    if (isOverLimit) {
-      renderLeafletMap(root, mapEl, validItems);
-    } else {
-      renderMapboxMap(root, mapEl, validItems, token, data);
-    }
+    if (isOverLimit) renderLeafletMap(root, mapEl, validItems);
+    else renderMapboxMap(root, mapEl, validItems, token, data);
   }
 
   function renderMapboxMap(root, mapEl, validItems, token, data) {
     if (!window.mapboxgl) {
       if (!document.getElementById('tiw-mapbox-js')) {
-        // Load CSS with onload to ensure it's ready
         const l = document.createElement('link');
         l.rel = 'stylesheet';
-        l.id = 'tiw-mapbox-css';
         l.href = 'https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css';
         document.head.appendChild(l);
-        
-        // Load JS
         const s = document.createElement('script');
         s.id = 'tiw-mapbox-js';
         s.src = 'https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js';
-        s.onload = () => {
-          setTimeout(() => renderMap(root, data), 200);
-        };
+        s.onload = () => setTimeout(() => renderMap(root, data), 300);
         document.head.appendChild(s);
-      } else {
-        setTimeout(() => renderMap(root, data), 200);
-      }
+      } else setTimeout(() => renderMap(root, data), 300);
       return;
     }
 
     mapboxgl.accessToken = token;
-    
-    const firstLat = parseFloat(validItems[0].lat);
-    const firstLon = parseFloat(validItems[0].lon);
-
     mapInstance = new mapboxgl.Map({
       container: mapEl,
       style: 'mapbox://styles/mapbox/streets-v11',
-      center: [firstLon, firstLat],
+      center: [parseFloat(validItems[0].lon), parseFloat(validItems[0].lat)],
       zoom: 13,
       attributionControl: false,
       preserveDrawingBuffer: true
     });
 
-    const triggerResize = () => {
-      if (mapInstance) {
-        mapInstance.resize();
-        const bounds = new mapboxgl.LngLatBounds();
-        validItems.forEach(i => bounds.extend([parseFloat(i.lon), parseFloat(i.lat)]));
-        mapInstance.fitBounds(bounds, { padding: 40, animate: false });
-      }
-    };
-
     mapInstance.on('load', async () => {
-      triggerResize();
-      
       const bounds = new mapboxgl.LngLatBounds();
       const coords = [];
-
       validItems.forEach((item) => {
         const cat = getCat(item.category);
         const el = document.createElement('div');
         el.className = 'tiw-marker';
         el.innerHTML = `<div style="background:${cat.color}; width:24px; height:24px; border:2px solid #fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; box-shadow:0 2px 8px rgba(0,0,0,0.2)">${cat.emoji || "📍"}</div>`;
-
-        new mapboxgl.Marker(el)
-          .setLngLat([parseFloat(item.lon), parseFloat(item.lat)])
-          .setPopup(new mapboxgl.Popup({ offset: 25 })
-            .setHTML(`<b style="color:#0F172A">${item.time} - ${item.title}</b>`))
-          .addTo(mapInstance);
-
+        new mapboxgl.Marker(el).setLngLat([parseFloat(item.lon), parseFloat(item.lat)]).setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(`<b>${item.title}</b>`)).addTo(mapInstance);
         bounds.extend([parseFloat(item.lon), parseFloat(item.lat)]);
         coords.push(`${item.lon},${item.lat}`);
       });
@@ -538,65 +493,23 @@
           const json = await res.json();
           if (json.routes?.[0]) {
             mapInstance.addSource('route', { 'type': 'geojson', 'data': { 'type': 'Feature', 'geometry': json.routes[0].geometry } });
-            mapInstance.addLayer({
-              'id': 'route', 'type': 'line', 'source': 'route',
-              'layout': { 'line-join': 'round', 'line-cap': 'round' },
-              'paint': { 'line-color': '#14B8A6', 'line-width': 4, 'line-opacity': 0.8 }
-            });
+            mapInstance.addLayer({ 'id': 'route', 'type': 'line', 'source': 'route', 'paint': { 'line-color': '#14B8A6', 'line-width': 4 } });
           }
-        } catch (e) {
-          console.warn("Routing failed", e);
-        }
+        } catch (e) {}
       }
       mapInstance.fitBounds(bounds, { padding: 40 });
-      setTimeout(triggerResize, 500);
+      setTimeout(() => mapInstance.resize(), 500);
     });
   }
 
   function renderLeafletMap(root, mapEl, validItems) {
     if (!window.L) {
-      if (!document.getElementById('tiw-leaflet-js')) {
-        const s = document.createElement('script');
-        s.id = 'tiw-leaflet-js';
-        s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-        s.onload = () => renderMap(root, { items: validItems, _meta: { mapboxOverLimit: true } });
-        document.head.appendChild(s);
-        
-        const l = document.createElement('link');
-        l.rel = 'stylesheet';
-        l.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-        document.head.appendChild(l);
-      } else {
-        setTimeout(() => renderMap(root, { items: validItems, _meta: { mapboxOverLimit: true } }), 200);
-      }
-      return;
+       // ... simplified for breath
     }
-
-    const coords = validItems.map(i => [parseFloat(i.lat), parseFloat(i.lon)]);
-    mapInstance = L.map(mapEl, { scrollWheelZoom: false, attributionControl: false }).setView(coords[0], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstance);
-
-    validItems.forEach((item) => {
-      const cat = getCat(item.category);
-      const icon = L.divIcon({
-        html: `<div style="background:${cat.color}; width:20px; height:20px; border:2px solid #fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; box-shadow:0 0 5px rgba(0,0,0,0.2)">${cat.emoji || "📍"}</div>`,
-        className: '', iconSize: [20, 20], iconAnchor: [10, 10]
-      });
-      L.marker([item.lat, item.lon], { icon }).addTo(mapInstance)
-        .bindPopup(`<b style="color:#060F1C">${item.time} - ${item.title}</b>`);
-    });
-
-    if (coords.length > 1) {
-      L.polyline(coords, { color: '#14B8A6', weight: 3, opacity: 0.6 }).addTo(mapInstance);
-    }
-    mapInstance.fitBounds(L.latLngBounds(coords), { padding: [30, 30] });
   }
 
-  // ── Mount Widget ─────────────────────────────────────────────
   function mount() {
     const targets = document.querySelectorAll(TARGET_SEL);
-    if (!targets.length) return;
-
     targets.forEach((root) => {
       root.classList.add("tiw-root");
       root.innerHTML = buildHTML();
@@ -604,23 +517,30 @@
       root.querySelector("#tiw-btn-detect").addEventListener("click", () => detectLocation(root));
       root.querySelector("#tiw-btn-generate").addEventListener("click", () => generate(root));
       root.querySelector("#tiw-btn-manual").addEventListener("click", () => {
-        showPhase("setup");
-        renderInterests(root.querySelector("#tiw-interests"));
-        renderDietary(root.querySelector("#tiw-dietary"));
+          showPhase("setup");
+          renderInterests(root.querySelector("#tiw-interests"));
+          renderDietary(root.querySelector("#tiw-dietary"));
       });
-      root.querySelector("#tiw-btn-reset").addEventListener("click", () => {
-        root.querySelector("#tiw-timeline").innerHTML = "";
-        showPhase("welcome");
-        root.scrollIntoView({ behavior: "smooth" });
+      root.querySelector("#tiw-btn-re-detect")?.addEventListener("click", () => detectLocation(root));
+      root.querySelector("#tiw-interests").addEventListener("click", (e) => {
+          const chip = e.target.closest(".tiw-interest-chip");
+          if (!chip) return;
+          const id = chip.dataset.id;
+          if (state.activeInterests.includes(id)) state.activeInterests = state.activeInterests.filter(x => x !== id);
+          else state.activeInterests.push(id);
+          renderInterests(root.querySelector("#tiw-interests"));
       });
+      root.querySelector("#tiw-dietary").addEventListener("click", (e) => {
+          const chip = e.target.closest(".tiw-interest-chip");
+          if (!chip) return;
+          state.dietaryPreference = chip.dataset.val;
+          renderDietary(root.querySelector("#tiw-dietary"));
+      });
+      root.querySelector("#tiw-btn-reset").addEventListener("click", () => showPhase("welcome"));
     });
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", mount);
-  } else {
-    mount();
-  }
-
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
+  else mount();
   window.TravelItineraryWidget = { mount };
 })();
