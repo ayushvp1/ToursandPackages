@@ -550,7 +550,17 @@
             ${item.must_try ? `<div class="tiw-info-tag" style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);color:#FCD34D"><span style="font-size:12px">⭐</span>${item.must_try}</div>` : ""}
             ${item.tip ? `<div class="tiw-info-tag" style="background:rgba(20,184,166,.06);border:1px solid rgba(20,184,166,.15);color:#5EEAD4"><span style="font-size:12px">💡</span>${item.tip}</div>` : ""}
           </div>
-          ${item.getting_there ? `<div style="margin-top:.65rem;padding-top:.65rem;border-top:1px solid #F1F5F9;font-size:.72rem;color:#334155;display:flex;align-items:center;gap:4px"><span style="font-size:12px">🗺️</span>${item.getting_there}</div>` : ""}
+          <div style="margin-top:.65rem;padding-top:.65rem;border-top:1px solid #F1F5F9;display:flex;flex-direction:column;gap:8px">
+            ${item.getting_there ? `<div style="font-size:.72rem;color:#334155;display:flex;align-items:center;gap:4px"><span style="font-size:12px">🗺️</span>${item.getting_there}</div>` : ""}
+            ${item.lat && item.lon ? `
+              <a href="https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lon}" 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#14B8A6;text-decoration:none;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">
+                <span style="font-size:13px">📍</span> View on Google Maps
+              </a>
+            ` : ""}
+          </div>
         </div>
       `;
       timeline.appendChild(div);
