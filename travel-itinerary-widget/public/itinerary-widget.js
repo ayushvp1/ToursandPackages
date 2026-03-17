@@ -532,18 +532,20 @@
             ${item.cost ? `<div style="background:#060F1C;border:1px solid #1E3A5F;border-radius:7px;padding:3px 9px;font-size:.7rem;color:#34D399;white-space:nowrap;flex-shrink:0">${item.cost.replace(/\$/g, "₹")}</div>` : ""}
           </div>
           ${item.description ? `<p style="margin:.45rem 0 .65rem;font-size:.84rem;color:#1E293B;line-height:1.65">${item.description}</p>` : ""}
-          ${item.photo_query ? `
+          ${(() => {
+            const q = item.photo_query || item.title || "travel scenery";
+            return `
             <div style="margin: 1.2rem 0; border-radius: 20px; overflow: hidden; height: 200px; background: #F8FAFC; position: relative; border: 1px solid #F1F5F9; box-shadow: inset 0 2px 10px rgba(0,0,0,0.02)">
               <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #94A3B8; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase">
                 <span style="animation: tiw-pulse 1.5s infinite">📸 Gathering Vision...</span>
               </div>
-              <img src="https://loremflickr.com/800/600/${encodeURIComponent(item.photo_query)},travel/all"
+              <img src="https://loremflickr.com/800/600/${encodeURIComponent(q)},travel/all"
                 style="width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.8s ease"
                 onload="this.style.opacity='1'; this.previousElementSibling.style.display='none'"
                 onerror="this.src='https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=800&auto=format&fit=crop'; this.style.opacity='1'; this.previousElementSibling.style.display='none'"
               />
-            </div>
-          ` : ""}
+            </div>`;
+          })()}
           <div style="display:flex;flex-wrap:wrap;gap:.4rem">
             ${item.must_try ? `<div class="tiw-info-tag" style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);color:#FCD34D"><span style="font-size:12px">⭐</span>${item.must_try}</div>` : ""}
             ${item.tip ? `<div class="tiw-info-tag" style="background:rgba(20,184,166,.06);border:1px solid rgba(20,184,166,.15);color:#5EEAD4"><span style="font-size:12px">💡</span>${item.tip}</div>` : ""}

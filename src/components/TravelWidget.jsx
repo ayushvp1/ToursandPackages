@@ -11,7 +11,7 @@ const TravelWidget = () => {
       const script = document.createElement('script')
       script.id = 'tiw-script'
       // Script is now in the main 'public' folder for Vercel/Vite to serve natively
-      script.src = '/itinerary-widget.js?v=2.0.2'
+      script.src = '/itinerary-widget.js?v=2.0.3'
       script.dataset.apiBase = apiOrigin
       script.dataset.target = '#itinerary-widget'
       script.async = true
