@@ -6,8 +6,8 @@
  * ║    Usage:                                                 ║
  * ║    <div id="itinerary-widget"></div>                      ║
  * ║    <script                                                ║
- * ║      src="/itinerary-widget.js?v=2.0.12"                  ║
- * ║      data-api-base="http://localhost:3001"               ║
+ * ║      src="/itinerary-widget.js?v=2.0.14"                  ║
+ * ║      data-api-base="https://tours-and-packages.vercel.app" ║
  * ║      data-target="#itinerary-widget">                     ║
  * ║    </script>                                              ║
  * ╚═══════════════════════════════════════════════════════════╝
@@ -47,12 +47,16 @@
       text-align: left;
     }
 
-    .tiw-root input {
+    /* CRITICAL: Force inputs to be visible in dark themes */
+    .tiw-root input, .tiw-root select, .tiw-root textarea {
       background: #FFFFFF !important;
       color: #0F172A !important;
       border: 1px solid #E2E8F0 !important;
       font-family: inherit;
       -webkit-appearance: none;
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
     }
     .tiw-root input::placeholder {
       color: #94A3B8 !important;
@@ -89,22 +93,22 @@
     @media (max-width: 480px) { .tiw-grid-2 { grid-template-columns: 1fr; } }
 
     .tiw-timeline-item {
-      display: flex; gap: 1rem; margin-bottom: 1.75rem;
+      display: flex; gap: 1rem; margin-bottom: 2.5rem;
       opacity: 0; transform: translateX(20px);
       transition: opacity .45s ease, transform .45s ease;
     }
     .tiw-timeline-item.tiw-visible { opacity: 1; transform: translateX(0); }
 
     .tiw-stop-card {
-      flex: 1; background: #FFFFFF;
-      border: 1px solid #E2E8F0; border-radius: 0 14px 14px 0;
-      padding: 1.1rem 1.25rem; border-left-width: 3px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      flex: 1; background: #FFFFFF !important;
+      border: 1px solid #E2E8F0; border-radius: 0 14px 14px 14px;
+      padding: 1.5rem; border-left-width: 4px; border-left-style: solid;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
     }
 
     .tiw-pill {
       display: inline-flex; align-items: center; gap: 4px;
-      font-size: .68rem; font-weight: 700; padding: 3px 9px;
+      font-size: .68rem; font-weight: 700; padding: 4px 10px;
       border-radius: 100px; text-transform: uppercase; letter-spacing: .06em;
     }
 
@@ -115,25 +119,26 @@
     }
 
     .tiw-interest-chip {
-      cursor: pointer; padding: .35rem .85rem; border-radius: 100px;
-      font-size: .8rem; font-weight: 500; border: 1px solid;
+      cursor: pointer; padding: .45rem 1rem; border-radius: 100px;
+      font-size: .85rem; font-weight: 600; border: 1px solid;
       transition: all .2s; user-select: none;
     }
     .tiw-interest-chip.active {
-      background: rgba(20,184,166,.12);
+      background: rgba(20,184,166,.12) !important;
       border-color: rgba(20,184,166,.4); color: #14B8A6;
     }
     .tiw-interest-chip.inactive {
-      background: transparent; border-color: #1E3A5F; color: #1E293B;
+      background: #F8FAFC !important; border-color: #E2E8F0; color: #475569;
     }
     #tiw-map-container {
-      width: 100%; height: 320px; border-radius: 14px; margin-bottom: 2rem;
+      width: 100%; height: 360px; border-radius: 14px; margin-bottom: 2.5rem;
       border: 1px solid #E2E8F0; overflow: hidden; position: relative;
-      background: #F1F5F9;
+      background: #F1F5F9; transition: all 0.3s ease;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.02);
     }
     .leaflet-container { background: #F8FAFC !important; }
     .tiw-marker { cursor: pointer; transition: transform 0.2s ease; }
-    .tiw-marker:hover { transform: scale(1.1); }
+    .tiw-marker:hover { transform: scale(1.15); z-index: 10; }
   `;
 
   const styleEl = document.createElement("style");
@@ -171,174 +176,131 @@
   function buildHTML() {
     return `
       <!-- PHASE: WELCOME -->
-      <div id="tiw-ph-welcome" class="tiw-phase tiw-active" style="padding:4rem 2rem; text-align:center">
-        <div style="font-size:3rem; margin-bottom:1.5rem">🌏</div>
-        <h2 style="font-family:'Playfair Display',serif; font-size:2.2rem; margin-bottom:1rem; color:#0F172A">AI Trip Planner</h2>
-        <p style="color:#64748B; margin-bottom:2.5rem; max-width:400px; margin-left:auto; margin-right:auto">
-          Arriving at a station? We'll design your perfect day with curated stops and 3D maps.
+      <div id="tiw-ph-welcome" class="tiw-phase tiw-active" style="padding:4.5rem 2rem; text-align:center">
+        <div style="font-size:3.5rem; margin-bottom:1.5rem">🌏</div>
+        <h2 style="font-family:'Playfair Display',serif; font-size:2.5rem; margin-bottom:1.2rem; color:#0F172A">AI Trip Planner</h2>
+        <p style="color:#64748B; margin-bottom:3rem; max-width:440px; margin-left:auto; margin-right:auto; font-size:1.1rem; line-height:1.6">
+          Arriving at a station? We'll design your perfect day with curated stops, high-fidelity routing, and local gems.
         </p>
-        <div style="display:flex; flex-direction:column; gap:1rem; align-items:center">
-          <button class="tiw-btn-primary" id="tiw-btn-detect">⚡ Map My Perfect Day</button>
+        <div style="display:flex; flex-direction:column; gap:1.2rem; align-items:center">
+          <button class="tiw-btn-primary" id="tiw-btn-detect" style="min-width:240px">⚡ Map My Perfect Day</button>
           <button class="tiw-btn-ghost" id="tiw-btn-manual">Enter Destination Manually</button>
         </div>
       </div>
 
       <!-- PHASE: SETUP -->
-      <div id="tiw-ph-setup" class="tiw-phase" style="padding:2.5rem 1.5rem">
-        <h3 style="font-size:1.2rem; font-weight:800; margin-bottom:2rem; border-left:4px solid #14B8A6; padding-left:1rem; color:#0F172A">Trip Details</h3>
+      <div id="tiw-ph-setup" class="tiw-phase" style="padding:3rem 2rem">
+        <h3 style="font-size:1.4rem; font-weight:800; margin-bottom:2.5rem; border-left:4px solid #14B8A6; padding-left:1.2rem; color:#0F172A">Plan Your Tour</h3>
         
-        <div style="margin-bottom:2rem">
-          <label style="display:block; font-size:.7rem; font-weight:800; text-transform:uppercase; color:#94A3B8; margin-bottom:.7rem">Where are you heading?</label>
+        <div style="margin-bottom:2.5rem">
+          <label style="display:block; font-size:.75rem; font-weight:800; text-transform:uppercase; color:#94A3B8; margin-bottom:.8rem; letter-spacing:.05em">Where are you heading?</label>
           <div style="position:relative">
-            <input type="text" id="tiw-input-dest" placeholder="e.g. Kozhikode, Kerala" style="width:100%; padding:.9rem 1.2rem; border-radius:12px; border:1px solid #E2E8F0; font-size:1rem; padding-right:45px">
-            <button id="tiw-btn-re-detect" title="Auto-detect location" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:18px">📍</button>
+            <input type="text" id="tiw-input-dest" placeholder="e.g. Kozhikode, Kerala" style="width:100%; padding:1.1rem 1.4rem; border-radius:14px; border:1px solid #E2E8F0; font-size:1.1rem; padding-right:55px; background:#fff !important">
+            <button id="tiw-btn-re-detect" title="Auto-detect location" style="position:absolute; right:15px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:20px; transition:transform 0.2s">📍</button>
           </div>
         </div>
 
-        <div class="tiw-grid-2" style="margin-bottom:2rem">
+        <div class="tiw-grid-2" style="margin-bottom:2.5rem">
           <div>
-            <label style="display:block; font-size:.7rem; font-weight:800; color:#94A3B8; margin-bottom:.7rem">Arriving (at station)</label>
-            <input type="time" id="tiw-input-arr" value="09:00" style="width:100%; padding:.8rem; border-radius:10px; border:1px solid #E2E8F0">
+            <label style="display:block; font-size:.75rem; font-weight:800; color:#94A3B8; margin-bottom:.8rem; text-transform:uppercase">Arrival Time</label>
+            <input type="time" id="tiw-input-arr" value="09:00" style="width:100%; padding:1rem; border-radius:12px; border:1px solid #E2E8F0; background:#fff !important">
           </div>
           <div>
-            <label style="display:block; font-size:.7rem; font-weight:800; color:#94A3B8; margin-bottom:.7rem">Departing (from station)</label>
-            <input type="time" id="tiw-input-dep" value="19:00" style="width:100%; padding:.8rem; border-radius:10px; border:1px solid #E2E8F0">
+            <label style="display:block; font-size:.75rem; font-weight:800; color:#94A3B8; margin-bottom:.8rem; text-transform:uppercase">Departure Time</label>
+            <input type="time" id="tiw-input-dep" value="19:00" style="width:100%; padding:1rem; border-radius:12px; border:1px solid #E2E8F0; background:#fff !important">
           </div>
-        </div>
-
-        <div style="margin-bottom:2rem">
-          <label style="display:block; font-size:.7rem; font-weight:800; color:#94A3B8; margin-bottom:1rem">What are you in the mood for?</label>
-          <div id="tiw-interests" style="display:flex; flex-wrap:wrap; gap:.6rem"></div>
         </div>
 
         <div style="margin-bottom:2.5rem">
-          <label style="display:block; font-size:.7rem; font-weight:800; color:#94A3B8; margin-bottom:1rem">Dietary Preference</label>
-          <div id="tiw-dietary" style="display:flex; gap:.6rem"></div>
+          <label style="display:block; font-size:.75rem; font-weight:800; color:#94A3B8; margin-bottom:1.2rem; text-transform:uppercase">What's your mood?</label>
+          <div id="tiw-interests" style="display:flex; flex-wrap:wrap; gap:.8rem"></div>
         </div>
 
-        <button class="tiw-btn-primary" style="width:100%" id="tiw-btn-generate">Generate Premium Itinerary</button>
+        <div style="margin-bottom:3rem">
+          <label style="display:block; font-size:.75rem; font-weight:800; color:#94A3B8; margin-bottom:1.2rem; text-transform:uppercase">Dietary Preference</label>
+          <div id="tiw-dietary" style="display:flex; gap:.8rem"></div>
+        </div>
+
+        <button class="tiw-btn-primary" style="width:100%; padding:1.2rem; font-size:1.1rem" id="tiw-btn-generate">Generate Premium Itinerary</button>
       </div>
 
       <!-- PHASE: LOADING -->
-      <div id="tiw-ph-loading" class="tiw-phase" style="padding:5rem 2rem; text-align:center">
-        <div style="width:60px; height:60px; border:4px solid #F1F5F9; border-top-color:#14B8A6; border-radius:50%; animation:tiw-spin 1s linear infinite; margin:0 auto 2rem"></div>
+      <div id="tiw-ph-loading" class="tiw-phase" style="padding:6rem 2rem; text-align:center">
+        <div style="width:70px; height:70px; border:5px solid #F1F5F9; border-top-color:#14B8A6; border-radius:50%; animation:tiw-spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite; margin:0 auto 2.5rem"></div>
         <style>@keyframes tiw-spin { to { transform: rotate(360deg); } }</style>
-        <h3 id="tiw-loading-title" style="font-size:1.4rem; font-weight:700; margin-bottom:.5rem; color:#0F172A">Crafting Your Vision...</h3>
-        <p id="tiw-loading-sub" style="color:#64748B; font-size:.9rem">Our AI is mapping the best resorts, cafes, and spots for your day tour.</p>
+        <h3 id="tiw-loading-title" style="font-size:1.6rem; font-weight:800; margin-bottom:.7rem; color:#0F172A">Crafting Your Vision...</h3>
+        <p id="tiw-loading-sub" style="color:#64748B; font-size:1rem; max-width:320px; margin:0 auto">Our AI is mapping the best resorts, hidden cafes, and scenic spots for you.</p>
       </div>
 
       <!-- PHASE: ITINERARY -->
       <div id="tiw-ph-itinerary" class="tiw-phase">
-        <div id="tiw-hero" style="background:linear-gradient(160deg,#F8FAFC 0%,#F1F5F9 100%);padding:2.25rem 1.5rem 2.75rem;text-align:center;border-bottom:1px solid #E2E8F0;position:relative;overflow:hidden">
-          <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 0%,rgba(20,184,166,0.05),transparent 60%);pointer-events:none"></div>
-          <p id="tiw-eyebrow" style="color:#14B8A6;font-size:.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.4rem">Your Day in</p>
-          <h2 id="tiw-city" style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,3rem);font-weight:700;color:#0F172A;margin-bottom:.4rem">—</h2>
-          <p id="tiw-tagline" style="color:#334155;font-style:italic;font-size:1rem;margin-bottom:.5rem">—</p>
-          <div id="tiw-pref-summary" style="display:flex;justify-content:center;gap:.7rem;margin-bottom:1.5rem;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#94A3B8"></div>
-          <div id="tiw-badges" style="display:flex;justify-content:center;gap:.65rem;flex-wrap:wrap;margin-bottom:1rem"></div>
-          <div id="tiw-alert" style="display:none;margin:0 auto;max-width:440px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.25);border-radius:100px;padding:.45rem 1.1rem;font-size:.8rem;color:#FB7185;display:inline-flex;align-items:center;gap:5px"></div>
+        <div id="tiw-hero" style="background:linear-gradient(160deg,#F8FAFC 0%,#F1F5F9 100%);padding:3rem 2rem 3.5rem;text-align:center;border-bottom:1px solid #E2E8F0;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle at 50% 0%,rgba(20,184,166,0.08),transparent 70%);pointer-events:none"></div>
+          <p id="tiw-eyebrow" style="color:#14B8A6;font-size:.75rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.6rem">Your Day in</p>
+          <h2 id="tiw-city" style="font-family:'Playfair Display',serif;font-size:clamp(2rem,6vw,3.5rem);font-weight:700;color:#0F172A;margin-bottom:.6rem;line-height:1.1">—</h2>
+          <p id="tiw-tagline" style="color:#334155;font-style:italic;font-size:1.1rem;margin-bottom:1.5rem;max-width:500px;margin-left:auto;margin-right:auto">—</p>
+          <div id="tiw-pref-summary" style="display:flex;justify-content:center;gap:1.2rem;margin-bottom:2rem;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.15em;color:#94A3B8"></div>
+          <div id="tiw-badges" style="display:flex;justify-content:center;gap:.8rem;flex-wrap:wrap;margin-bottom:1.2rem"></div>
+          <div id="tiw-alert" style="display:none;margin:0 auto;max-width:480px;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.15);border-radius:100px;padding:.6rem 1.4rem;font-size:.85rem;color:#E11D48;font-weight:600;display:inline-flex;align-items:center;gap:8px"></div>
         </div>
-        <div style="max-width:640px;margin:0 auto;padding:2rem 1rem 4rem">
+        <div style="max-width:680px;margin:0 auto;padding:2.5rem 1.5rem 5rem">
           <div id="tiw-map-container">
-            <div id="tiw-map" style="width:100%; height:320px"></div>
+            <div id="tiw-map" style="width:100%; height:100%"></div>
           </div>
           <div style="position:relative">
-            <div style="position:absolute;left:20px;top:12px;bottom:12px;width:2px;background:linear-gradient(to bottom,#14B8A6,#E2E8F0);opacity:.3"></div>
+            <div style="position:absolute;left:21px;top:15px;bottom:15px;width:2px;background:linear-gradient(to bottom, #14B8A6 0%, #E2E8F0 100%);opacity:.4"></div>
             <div id="tiw-timeline"></div>
           </div>
-          <div style="text-align:center;margin-top:2rem;padding-top:1.75rem;border-top:1px solid #F1F5F9">
-            <p style="color:#94A3B8;font-size:.72rem;margin-bottom:1rem">Powered by AI & Mapbox Professionals — 10k Safe Edition</p>
-            <button class="tiw-btn-ghost" id="tiw-btn-reset">↩ Plan Another Trip</button>
+          <div style="text-align:center;margin-top:3.5rem;padding-top:2.5rem;border-top:1px solid #F1F5F9">
+            <p style="color:#94A3B8;font-size:.8rem;margin-bottom:1.5rem;font-weight:500">Intelligently curated for you · Powered by AI & Mapbox</p>
+            <button class="tiw-btn-ghost" id="tiw-btn-reset" style="padding:0.8rem 2rem">↩ Plan Another Trip</button>
           </div>
         </div>
       </div>
     `;
   }
 
-  // ── Phase Switching ──────────────────────────────────────────
+  // ── Logic ───────────────────────────────────────────────────
   function showPhase(id) {
-    document.querySelectorAll(".tiw-phase").forEach((p) => p.classList.remove("tiw-active"));
+    document.querySelectorAll(".tiw-phase").forEach(p => p.classList.remove("tiw-active"));
     const el = document.getElementById(`tiw-ph-${id}`);
     if (el) el.classList.add("tiw-active");
     state.currentPhase = id;
   }
 
-  // ── Render Interest Chips ────────────────────────────────────
   function renderInterests(container) {
-    container.innerHTML = ALL_INTERESTS.map((i) => {
-      const active = state.activeInterests.includes(i.id);
-      return `<div class="tiw-interest-chip ${active ? "active" : "inactive"}" data-id="${i.id}">${i.label}</div>`;
-    }).join("");
+    if(!container) return;
+    container.innerHTML = ALL_INTERESTS.map(i => `<div class="tiw-interest-chip ${state.activeInterests.includes(i.id) ? "active" : "inactive"}" data-id="${i.id}">${i.label}</div>`).join("");
   }
-
-  // ── Render Dietary Chips ─────────────────────────────────────
   function renderDietary(container) {
-    const options = ["VEG", "NON-VEG"];
-    container.innerHTML = options.map((opt) => {
-      const active = state.dietaryPreference === opt;
-      return `<div class="tiw-interest-chip ${active ? "active" : "inactive"}" data-val="${opt}">${opt === "VEG" ? "🥗 Veg Only" : "🍖 Non-Veg OK"}</div>`;
-    }).join("");
+    if(!container) return;
+    const opts = ["VEG", "NON-VEG"];
+    container.innerHTML = opts.map(val => `<div class="tiw-interest-chip ${state.dietaryPreference === val ? "active" : "inactive"}" data-val="${val}">${val === "VEG" ? "🥗 Pure Veg" : "🍖 Non-Veg OK"}</div>`).join("");
   }
 
-  // ── API Interactions ─────────────────────────────────────────
   async function detectLocation(root) {
     const btn = root.querySelector("#tiw-btn-detect");
-    const originalText = btn ? btn.innerHTML : "⚡ Map My Perfect Day";
-    if (btn) {
-      btn.innerHTML = "🛰️ Locating...";
-      btn.disabled = true;
-    }
-
+    const orig = btn ? btn.innerHTML : "⚡ Map My Perfect Day";
+    if (btn) { btn.innerHTML = "🛰️ Locating..."; btn.disabled = true; }
     try {
-      // Primary: ipinfo.io (no token = limited) or similar
-      let data = null;
-      try {
-        const res = await fetch("https://ipapi.co/json/");
-        if (res.ok) data = await res.json();
-      } catch (e) {
-        console.warn("ipapi.co failed, trying fallback");
-        // Fallback: simple cloudflare cdn-cgi trace
-        const res = await fetch("https://1.1.1.1/cdn-cgi/trace");
-        if (res.ok) {
-           // This is text based, harder to parse but reliable for IP. 
-           // Let's stick to JSON ones for now.
+      const res = await fetch("https://ipapi.co/json/").catch(() => null);
+      if (res && res.ok) {
+        const d = await res.json();
+        state.dest = d.city + (d.region ? `, ${d.region}` : "");
+      } else if (navigator.geolocation) {
+        // High-precision fallback
+        const pos = await new Promise((rs, rj) => navigator.geolocation.getCurrentPosition(rs, rj, {timeout:5000})).catch(() => null);
+        if (pos) {
+          const apiBase = script.dataset.apiBase || "https://tours-and-packages.vercel.app";
+          const rev = await fetch(`${apiBase}/api/geocode/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`).then(r => r.json()).catch(() => null);
+          if (rev && rev.city) state.dest = rev.city;
         }
       }
-
-      if (data && data.city) {
-        state.dest = data.city + (data.region ? `, ${data.region}` : "");
-        const input = root.querySelector("#tiw-input-dest");
-        if (input) input.value = state.dest;
-      } else {
-         // Try Browser Geolocation as last resort (requires user permission)
-         if ("geolocation" in navigator) {
-            const pos = await new Promise((resolve, reject) => {
-              navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
-            }).catch(() => null);
-            
-            if (pos) {
-              const apiBase = script.dataset.apiBase || "http://localhost:3001";
-              const revRes = await fetch(`${apiBase}/api/geocode/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
-              if (revRes.ok) {
-                const revData = await revRes.json();
-                state.dest = revData.city;
-                const input = root.querySelector("#tiw-input-dest");
-                if (input) input.value = state.dest;
-              }
-            }
-         }
-      }
-    } catch (e) {
-      console.warn("Location detection failed", e);
     } finally {
-      if (btn) {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      }
+      if (btn) { btn.innerHTML = orig; btn.disabled = false; }
       showPhase("setup");
       renderInterests(root.querySelector("#tiw-interests"));
       renderDietary(root.querySelector("#tiw-dietary"));
-      // Ensure values are refreshed in inputs
       const input = root.querySelector("#tiw-input-dest");
       if (input && state.dest) input.value = state.dest;
     }
@@ -348,39 +310,20 @@
     state.dest = root.querySelector("#tiw-input-dest").value;
     state.arrivalTime = root.querySelector("#tiw-input-arr").value;
     state.departureTime = root.querySelector("#tiw-input-dep").value;
-
-    if (!state.dest) {
-      alert("Please enter a destination");
-      return;
-    }
+    if (!state.dest) return alert("Please specify a city!");
 
     showPhase("loading");
-    document.getElementById("tiw-loading-title").innerText = "Crafting Your Vision...";
-    document.getElementById("tiw-loading-sub").innerText = "Our AI is mapping the best resorts, cafes, and spots for your day tour.";
-
     try {
-      const apiBase = script.dataset.apiBase || "http://localhost:3001";
+      const apiBase = script.dataset.apiBase || "https://tours-and-packages.vercel.app";
       const res = await fetch(`${apiBase}/api/itinerary`, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({
-          dest:              state.dest,
-          arrivalTime:       state.arrivalTime,
-          departureTime:     state.departureTime,
-          interests:         state.activeInterests,
-          dietaryPreference: state.dietaryPreference,
-          arrivalPoint:      "Railway Station",
-          departurePoint:    "Railway Station",
-        }),
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({...state, arrivalPoint: "Railway Station", departurePoint: "Railway Station"})
       });
-
-      if (!res.ok) throw new Error("API failed");
+      if (!res.ok) throw new Error("Generation failed");
       const data = await res.json();
-      
-      const itinerary = data.itinerary || data; 
-      renderItinerary(root, itinerary);
-    } catch (err) {
-      alert(`Error: ${err.message}`);
+      renderItinerary(root, data.itinerary || data);
+    } catch (e) {
+      alert("Something went wrong. Please try manual input.");
       showPhase("setup");
     }
   }
@@ -388,197 +331,140 @@
   function renderItinerary(root, data) {
     root.querySelector("#tiw-city").innerText = data.city;
     root.querySelector("#tiw-tagline").innerText = data.tagline;
-    root.querySelector("#tiw-pref-summary").innerText = `${state.dietaryPreference} · ${state.activeInterests.join(" & ") || "Exploration"}`;
-    
-    const badges = root.querySelector("#tiw-badges");
-    badges.innerHTML = `
-      <div style="background:rgba(20,184,166,.07); color:#14B8A6; border:1px solid rgba(20,184,166,.15); padding:6px 14px; border-radius:100px; font-size:.7rem; font-weight:700">☔ ${data.weather_tip || "Sunny"}</div>
-      <div style="background:rgba(245,158,11,.07); color:#D97706; border:1px solid rgba(245,158,11,.15); padding:6px 14px; border-radius:100px; font-size:.7rem; font-weight:700">💰 ${data.cost_estimate || "Affordable"}</div>
+    root.querySelector("#tiw-pref-summary").innerText = `${state.dietaryPreference} · ${state.activeInterests.join(" & ") || "EXPLORING"}`;
+    root.querySelector("#tiw-badges").innerHTML = `
+      <div class="tiw-pill" style="background:rgba(20,184,166,.08);color:#14B8A6;border:1px solid rgba(20,184,166,.15)">☔ ${data.weather_tip || "Check weather"}</div>
+      <div class="tiw-pill" style="background:rgba(245,158,11,.08);color:#D97706;border:1px solid rgba(245,158,11,.15)">💰 ${data.cost_estimate || "Mid-range"}</div>
     `;
-
     const alertEl = root.querySelector("#tiw-alert");
-    if (data.departure_alert) {
-      alertEl.style.display = "inline-flex";
-      alertEl.innerHTML = `<span>🚨</span> ${data.departure_alert}`;
-    } else {
-      alertEl.style.display = "none";
-    }
+    if(data.departure_alert) { alertEl.style.display = "inline-flex"; alertEl.innerHTML = `<span>🚨</span> ${data.departure_alert}`; }
+    else alertEl.style.display = "none";
 
-    const timeline = root.querySelector("#tiw-timeline");
-    timeline.innerHTML = "";
+    const tl = root.querySelector("#tiw-timeline"); tl.innerHTML = "";
     (data.items || []).forEach((item, idx) => {
       const cat = getCat(item.category);
-      const div = document.createElement("div");
-      div.className = "tiw-timeline-item";
+      const div = document.createElement("div"); div.className = "tiw-timeline-item";
       div.innerHTML = `
-        <div style="width:42px; text-align:right">
-          <div style="width:12px; height:12px; border-radius:50%; background:${cat.color}; border:2px solid white; box-shadow:0 0 0 2px ${cat.light}; margin:6px 0 0 auto"></div>
-          <div style="color:#334155;font-size:.67rem;font-weight:600;margin-top:5px;text-align:center">${item.time}</div>
+        <div style="width:42px; text-align:right; flex-shrink:0">
+          <div style="width:12px; height:12px; border-radius:50%; background:${cat.color}; border:3px solid white; box-shadow:0 0 0 2px ${cat.light}; margin:8px 0 0 auto"></div>
+          <div style="color:#64748B;font-size:.7rem;font-weight:700;margin-top:6px;text-align:right">${item.time}</div>
         </div>
-        <div class="tiw-stop-card" style="border-left-color:${cat.color}; background:#FFFFFF">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;margin-bottom:.55rem">
+        <div class="tiw-stop-card" style="border-left-color:${cat.color}">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:0.8rem">
             <div>
-              <div style="display:flex;align-items:center;gap:5px;margin-bottom:.3rem;flex-wrap:wrap">
-                <span class="tiw-pill" style="background:${cat.light};color:${cat.color}">${cat.emoji} ${item.category || "visit"}</span>
-                ${item.end_time ? `<span style="color:#1E3A5F;font-size:.68rem">→ ${item.end_time}</span>` : ""}
-              </div>
-              <h3 style="margin:0;font-size:.97rem;font-weight:600;color:#0F172A;line-height:1.3">${item.title}</h3>
-              ${item.subtitle ? `<p style="margin:.12rem 0 0;font-size:.73rem;color:#334155">${item.subtitle}</p>` : ""}
+              <span class="tiw-pill" style="background:${cat.light};color:${cat.color};margin-bottom:6px">${cat.emoji} ${item.category}</span>
+              <h4 style="margin:0; font-size:1.15rem; font-weight:700; color:#0F172A">${item.title}</h4>
             </div>
-            ${item.cost ? `<div style="background:#060F1C;border:1px solid #1E3A5F;border-radius:7px;padding:3px 9px;font-size:.7rem;color:#34D399;white-space:nowrap;flex-shrink:0">${item.cost.replace(/\$/g, "₹")}</div>` : ""}
+            ${item.cost ? `<div style="background:#0F172A; color:#10B981; padding:4px 10px; border-radius:8px; font-size:.75rem; font-weight:800; border:1px solid #334155">${item.cost.replace('$', '₹')}</div>` : ""}
           </div>
-          ${item.description ? `<p style="margin:.45rem 0 .65rem;font-size:.84rem;color:#1E293B;line-height:1.65">${item.description}</p>` : ""}
-          <div style="margin: 1.2rem 0; border-radius: 20px; overflow: hidden; height: 200px; background: #F8FAFC; position: relative">
-             <img src="https://loremflickr.com/800/600/${encodeURIComponent(item.title || "travel")},scenery/all" style="width:100%; height:100%; object-fit:cover">
+          <p style="font-size:0.95rem; color:#475569; margin:0 0 1.2rem; line-height:1.6">${item.description}</p>
+          <div style="border-radius:14px; overflow:hidden; height:220px; background:#F1F5F9; margin-bottom:1.2rem; border:1px solid #E2E8F0">
+             <img src="https://loremflickr.com/800/600/${encodeURIComponent(item.title)},travel/all" style="width:100%; height:100%; object-fit:cover" loading="lazy">
           </div>
-          <div style="display:flex;flex-wrap:wrap;gap:.4rem">
-            ${item.must_try ? `<div class="tiw-info-tag" style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);color:#FCD34D"><span style="font-size:12px">⭐</span>${item.must_try}</div>` : ""}
-            ${item.tip ? `<div class="tiw-info-tag" style="background:rgba(20,184,166,.06);border:1px solid rgba(20,184,166,.15);color:#5EEAD4"><span style="font-size:12px">💡</span>${item.tip}</div>` : ""}
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:1rem">
+            ${item.must_try ? `<div class="tiw-info-tag" style="background:rgba(245,158,11,.05); color:#92400E; border:1px solid rgba(245,158,11,.1); margin:0"><span style="font-size:1.2rem">🥘</span> <b>Must Try:</b> ${item.must_try}</div>` : ""}
+            ${item.tip ? `<div class="tiw-info-tag" style="background:rgba(16,185,129,.05); color:#065F46; border:1px solid rgba(16,185,129,.1); margin:0"><span style="font-size:1.2rem">💡</span> ${item.tip}</div>` : ""}
           </div>
-          <div style="margin-top:.65rem;padding-top:.65rem;border-top:1px solid #F1F5F9;display:flex;flex-direction:column;gap:8px">
-            ${item.getting_there ? `<div style="font-size:.72rem;color:#334155;display:flex;align-items:center;gap:4px"><span style="font-size:12px">🗺️</span>${item.getting_there}</div>` : ""}
-            ${item.lat && item.lon ? `
-              <a href="https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lon}" 
-                 target="_blank" 
-                 rel="noopener noreferrer"
-                 style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#14B8A6;text-decoration:none;font-weight:700;letter-spacing:0.02em;text-transform:uppercase">
-                <span style="font-size:13px">📍</span> View on Google Maps
-              </a>
-            ` : ""}
+          <div style="border-top:1px solid #F1F5F9; padding-top:1rem; display:flex; justify-content:space-between; align-items:center">
+             <span style="font-size:0.75rem; color:#94A3B8; font-weight:600">🗺️ ${item.getting_there || "Walk or Cab"}</span>
+             <a href="https://maps.google.com/?q=${item.lat},${item.lon}" target="_blank" style="color:#14B8A6; font-size:0.8rem; font-weight:800; text-decoration:none; display:flex; align-items:center; gap:5px">📍 GOOGLE MAPS</a>
           </div>
         </div>
       `;
-      timeline.appendChild(div);
-      setTimeout(() => div.classList.add("tiw-visible"), idx * 170 + 80);
+      tl.appendChild(div);
+      setTimeout(() => div.classList.add("tiw-visible"), idx * 150 + 100);
     });
 
     renderMap(root, data);
     showPhase("itinerary");
-    if (mapInstance && typeof mapInstance.resize === 'function') {
-      setTimeout(() => mapInstance.resize(), 500);
-    }
-    root.scrollIntoView({ behavior: "smooth", block: "start" });
+    setTimeout(() => mapInstance && mapInstance.resize(), 500);
+    root.scrollIntoView({ behavior: "smooth" });
   }
 
   let mapInstance = null;
   function renderMap(root, data) {
-    const items = data.items || [];
-    const isOverLimit = data._meta?.mapboxOverLimit || false;
-    const token = script?.dataset?.mapboxToken || "pk.eyJ1IjoiYXl1c2h2cDEiLCJhIjoiY204ZHB4NmI5MHZwejJxcTJkb3hncGdmdyJ9.y7fS-x_M5x7W-x_M5x7W-x_M5x7W-x";
+    const items = (data.items || []).filter(i => !isNaN(parseFloat(i.lat)));
+    const token = script.dataset.mapboxToken || "";
     const mapEl = root.querySelector("#tiw-map");
-    if (!mapEl) return;
+    if (!mapEl || !items.length) return;
+    if (mapInstance) { if(typeof mapInstance.remove === 'function') mapInstance.remove(); mapInstance = null; }
     
-    if (mapInstance) {
-      if (typeof mapInstance.remove === 'function') mapInstance.remove();
-      mapInstance = null;
-      mapEl.innerHTML = "";
-    }
+    if (data._meta?.mapboxOverLimit) return renderLeaflet(mapEl, items);
 
-    const validItems = items.filter(i => !isNaN(parseFloat(i.lat)) && !isNaN(parseFloat(i.lon)));
-    if (!validItems.length) {
-      root.querySelector("#tiw-map-container").style.display = "none";
-      return;
-    }
-    root.querySelector("#tiw-map-container").style.display = "block";
-
-    if (isOverLimit) renderLeafletMap(root, mapEl, validItems);
-    else renderMapboxMap(root, mapEl, validItems, token, data);
-  }
-
-  function renderMapboxMap(root, mapEl, validItems, token, data) {
     if (!window.mapboxgl) {
-      if (!document.getElementById('tiw-mapbox-js')) {
-        const l = document.createElement('link');
-        l.rel = 'stylesheet';
-        l.href = 'https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css';
-        document.head.appendChild(l);
-        const s = document.createElement('script');
-        s.id = 'tiw-mapbox-js';
-        s.src = 'https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js';
-        s.onload = () => setTimeout(() => renderMap(root, data), 300);
-        document.head.appendChild(s);
-      } else setTimeout(() => renderMap(root, data), 300);
+      const l = document.createElement("link"); l.rel="stylesheet"; l.href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css"; document.head.appendChild(l);
+      const s = document.createElement("script"); s.src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"; 
+      s.onload = () => renderMap(root, data); document.head.appendChild(s);
       return;
     }
-
     mapboxgl.accessToken = token;
-    mapInstance = new mapboxgl.Map({
-      container: mapEl,
-      style: 'mapbox://styles/mapbox/streets-v11',
-      center: [parseFloat(validItems[0].lon), parseFloat(validItems[0].lat)],
-      zoom: 13,
-      attributionControl: false,
-      preserveDrawingBuffer: true
-    });
-
-    mapInstance.on('load', async () => {
-      const bounds = new mapboxgl.LngLatBounds();
+    mapInstance = new mapboxgl.Map({ container: mapEl, style: "mapbox://styles/mapbox/streets-v11", center: [parseFloat(items[0].lon), parseFloat(items[0].lat)], zoom: 12, attributionControl: false, preserveDrawingBuffer: true });
+    
+    mapInstance.on("load", async () => {
+      const b = new mapboxgl.LngLatBounds();
       const coords = [];
-      validItems.forEach((item) => {
-        const cat = getCat(item.category);
+      items.forEach(i => {
+        const cat = getCat(i.category);
         const el = document.createElement('div');
         el.className = 'tiw-marker';
-        el.innerHTML = `<div style="background:${cat.color}; width:24px; height:24px; border:2px solid #fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; box-shadow:0 2px 8px rgba(0,0,0,0.2)">${cat.emoji || "📍"}</div>`;
-        new mapboxgl.Marker(el).setLngLat([parseFloat(item.lon), parseFloat(item.lat)]).setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(`<b>${item.title}</b>`)).addTo(mapInstance);
-        bounds.extend([parseFloat(item.lon), parseFloat(item.lat)]);
-        coords.push(`${item.lon},${item.lat}`);
+        el.innerHTML = `<div style="background:${cat.color};width:24px;height:24px;border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,0.15)">${cat.emoji}</div>`;
+        new mapboxgl.Marker(el).setLngLat([parseFloat(i.lon), parseFloat(i.lat)]).addTo(mapInstance);
+        b.extend([parseFloat(i.lon), parseFloat(i.lat)]);
+        coords.push(`${i.lon},${i.lat}`);
       });
-
       if (coords.length > 1) {
         try {
-          const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coords.join(';')}?geometries=geojson&overview=full&access_token=${token}`;
-          const res = await fetch(url);
+          const res = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${coords.join(';')}?geometries=geojson&access_token=${token}`);
           const json = await res.json();
           if (json.routes?.[0]) {
-            mapInstance.addSource('route', { 'type': 'geojson', 'data': { 'type': 'Feature', 'geometry': json.routes[0].geometry } });
-            mapInstance.addLayer({ 'id': 'route', 'type': 'line', 'source': 'route', 'paint': { 'line-color': '#14B8A6', 'line-width': 4 } });
+            mapInstance.addSource('route', { type: 'geojson', data: { type: 'Feature', geometry: json.routes[0].geometry }});
+            mapInstance.addLayer({ id: 'route', type: 'line', source: 'route', paint: { 'line-color': '#14B8A6', 'line-width': 4, 'line-opacity': 0.8 }});
           }
-        } catch (e) {}
+        } catch(err){}
       }
-      mapInstance.fitBounds(bounds, { padding: 40 });
+      mapInstance.fitBounds(b, {padding: 60, maxZoom: 15});
       setTimeout(() => mapInstance.resize(), 500);
     });
   }
 
-  function renderLeafletMap(root, mapEl, validItems) {
+  function renderLeaflet(el, items) {
     if (!window.L) {
-       // ... simplified for breath
+      const l = document.createElement("link"); l.rel="stylesheet"; l.href="https://unpkg.com/leaflet/dist/leaflet.css"; document.head.appendChild(l);
+      const s = document.createElement("script"); s.src="https://unpkg.com/leaflet/dist/leaflet.js"; 
+      s.onload = () => renderLeaflet(el, items); document.head.appendChild(s);
+      return;
     }
+    mapInstance = L.map(el, {attributionControl: false}).setView([items[0].lat, items[0].lon], 13);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(mapInstance);
+    items.forEach(i => L.marker([i.lat, i.lon]).addTo(mapInstance));
+    const group = new L.featureGroup(items.map(i => L.marker([i.lat, i.lon])));
+    mapInstance.fitBounds(group.getBounds().pad(0.1));
   }
 
   function mount() {
-    const targets = document.querySelectorAll(TARGET_SEL);
-    targets.forEach((root) => {
-      root.classList.add("tiw-root");
-      root.innerHTML = buildHTML();
-
-      root.querySelector("#tiw-btn-detect").addEventListener("click", () => detectLocation(root));
-      root.querySelector("#tiw-btn-generate").addEventListener("click", () => generate(root));
-      root.querySelector("#tiw-btn-manual").addEventListener("click", () => {
-          showPhase("setup");
-          renderInterests(root.querySelector("#tiw-interests"));
-          renderDietary(root.querySelector("#tiw-dietary"));
-      });
+    document.querySelectorAll(TARGET_SEL).forEach(root => {
+      root.classList.add("tiw-root"); root.innerHTML = buildHTML();
+      root.querySelector("#tiw-btn-detect").onclick = () => detectLocation(root);
+      root.querySelector("#tiw-btn-manual").onclick = () => { showPhase("setup"); renderInterests(root.querySelector("#tiw-interests")); renderDietary(root.querySelector("#tiw-dietary")); };
       root.querySelector("#tiw-btn-re-detect")?.addEventListener("click", () => detectLocation(root));
-      root.querySelector("#tiw-interests").addEventListener("click", (e) => {
-          const chip = e.target.closest(".tiw-interest-chip");
-          if (!chip) return;
-          const id = chip.dataset.id;
-          if (state.activeInterests.includes(id)) state.activeInterests = state.activeInterests.filter(x => x !== id);
-          else state.activeInterests.push(id);
-          renderInterests(root.querySelector("#tiw-interests"));
-      });
-      root.querySelector("#tiw-dietary").addEventListener("click", (e) => {
-          const chip = e.target.closest(".tiw-interest-chip");
-          if (!chip) return;
-          state.dietaryPreference = chip.dataset.val;
-          renderDietary(root.querySelector("#tiw-dietary"));
-      });
-      root.querySelector("#tiw-btn-reset").addEventListener("click", () => showPhase("welcome"));
+      root.querySelector("#tiw-btn-generate").onclick = () => generate(root);
+      root.querySelector("#tiw-btn-reset").onclick = () => showPhase("welcome");
+      root.querySelector("#tiw-interests").onclick = e => { 
+        if (e.target.dataset.id) { 
+          const id = e.target.dataset.id; 
+          if (state.activeInterests.includes(id)) state.activeInterests = state.activeInterests.filter(x => x !== id); 
+          else state.activeInterests.push(id); 
+          renderInterests(root.querySelector("#tiw-interests")); 
+        } 
+      };
+      root.querySelector("#tiw-dietary").onclick = e => { 
+        if (e.target.dataset.val) { 
+          state.dietaryPreference = e.target.dataset.val; 
+          renderDietary(root.querySelector("#tiw-dietary")); 
+        } 
+      };
     });
   }
-
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
-  else mount();
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount); else mount();
   window.TravelItineraryWidget = { mount };
 })();
