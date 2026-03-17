@@ -155,11 +155,6 @@
   styleEl.textContent = STYLES;
   document.head.appendChild(styleEl);
 
-  // ── Load Leaflet JS ─────────────────────────────────────────
-  const scriptEl = document.createElement("script");
-  scriptEl.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-  document.head.appendChild(scriptEl);
-
   // ── Category Definitions ────────────────────────────────────
   const CATEGORIES = {
     breakfast:  { emoji: "🍳", color: "#D97706", light: "rgba(217,119,6,.12)" },
@@ -576,6 +571,9 @@
     renderMap(root, data);
 
     showPhase("itinerary");
+    if (mapInstance && typeof mapInstance.resize === 'function') {
+      setTimeout(() => mapInstance.resize(), 300);
+    }
     root.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -633,7 +631,7 @@
       attributionControl: false
     });
 
-    mapInstance.on('load', () => {
+    mapInstance.on('load', async () => {
       const bounds = new mapboxgl.LngLatBounds();
       const coords = [];
 
@@ -652,19 +650,38 @@
           .addTo(mapInstance);
 
         bounds.extend([parseFloat(item.lon), parseFloat(item.lat)]);
-        coords.push([parseFloat(item.lon), parseFloat(item.lat)]);
+        coords.push(`${item.lon},${item.lat}`);
       });
 
+      // Fetch Real Road Route
       if (coords.length > 1) {
-        mapInstance.addSource('route', {
-          'type': 'geojson',
-          'data': { 'type': 'Feature', 'geometry': { 'type': 'LineString', 'coordinates': coords } }
-        });
-        mapInstance.addLayer({
-          'id': 'route', 'type': 'line', 'source': 'route',
-          'layout': { 'line-join': 'round', 'line-cap': 'round' },
-          'paint': { 'line-color': '#14B8A6', 'line-width': 4, 'line-opacity': 0.6, 'line-dasharray': [1, 2] }
-        });
+        try {
+          const query = coords.join(';');
+          const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${query}?geometries=geojson&access_token=${token}`;
+          const res = await fetch(url);
+          const json = await res.json();
+          
+          if (json.routes && json.routes[0]) {
+            const data = json.routes[0].geometry;
+            mapInstance.addSource('route', { 'type': 'geojson', 'data': { 'type': 'Feature', 'geometry': data } });
+            mapInstance.addLayer({
+              'id': 'route', 'type': 'line', 'source': 'route',
+              'layout': { 'line-join': 'round', 'line-cap': 'round' },
+              'paint': { 'line-color': '#14B8A6', 'line-width': 5, 'line-opacity': 0.7 }
+            });
+          } else {
+            throw new Error("No route found");
+          }
+        } catch (e) {
+          console.warn("Mapbox Directions API failed, falling back to straight lines", e);
+          const rawCoords = validItems.map(i => [parseFloat(i.lon), parseFloat(i.lat)]);
+          mapInstance.addSource('route', { 'type': 'geojson', 'data': { 'type': 'Feature', 'geometry': { 'type': 'LineString', 'coordinates': rawCoords } } });
+          mapInstance.addLayer({
+            'id': 'route', 'type': 'line', 'source': 'route',
+            'layout': { 'line-join': 'round', 'line-cap': 'round' },
+            'paint': { 'line-color': '#94A3B8', 'line-width': 3, 'line-opacity': 0.5, 'line-dasharray': [2, 2] }
+          });
+        }
       }
       mapInstance.fitBounds(bounds, { padding: 40, animate: true });
     });
