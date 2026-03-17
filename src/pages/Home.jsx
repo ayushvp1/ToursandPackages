@@ -194,7 +194,7 @@ const Home = () => {
                     <span className="text-xs text-slate-400 font-bold uppercase tracking-tighter">Starting at</span>
                     <span className="text-3xl font-black text-primary leading-none">{item.price}</span>
                   </div>
-                  <Link to="/details" className="bg-secondary text-white w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg shadow-secondary/20">
+                  <Link to="/details" className="bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg shadow-primary/20">
                     <span className="material-symbols-outlined">arrow_forward</span>
                   </Link>
                 </div>
@@ -218,7 +218,7 @@ const Home = () => {
           </motion.div>
           <div className="relative z-10 text-center">
             <h3 className="text-4xl font-black mb-6">What Our Explorers Say</h3>
-            <div className="w-24 h-1.5 bg-secondary mx-auto rounded-full"></div>
+            <div className="w-24 h-1.5 bg-primary mx-auto rounded-full"></div>
           </div>
         </div>
         <motion.div 
@@ -267,7 +267,7 @@ const Home = () => {
               <div className="flex items-center gap-5 mb-8 relative z-10">
                 <div className="relative">
                   <img className="w-16 h-16 rounded-full object-cover ring-4 ring-slate-50 dark:ring-slate-900 shadow-lg" src={item.img} alt={item.name}/>
-                  <div className="absolute -bottom-1 -right-1 bg-secondary w-6 h-6 rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center">
+                  <div className="absolute -bottom-1 -right-1 bg-primary w-6 h-6 rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center">
                     <span className="material-symbols-outlined text-[10px] text-white">verified</span>
                   </div>
                 </div>

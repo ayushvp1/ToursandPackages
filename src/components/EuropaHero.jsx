@@ -52,9 +52,9 @@ const EuropaHero = () => {
           style={{ y: textY, opacity: textOpacity }}
           className="relative z-10 text-center max-w-2xl px-8"
         >
-          <h2 className="text-3xl md:text-5xl font-serif text-secondary drop-shadow-sm leading-snug">
+          <h2 className="text-3xl md:text-5xl font-serif text-dark drop-shadow-sm leading-snug">
             We build websites that convert<br/>
-            <span className="italic">users and turn into fans</span>
+            <span className="italic text-primary">users and turn into fans</span>
           </h2>
         </motion.div>
 
@@ -63,12 +63,12 @@ const EuropaHero = () => {
           style={{ y: buttonY, scale: buttonScale, opacity: buttonOpacity }}
           className="absolute bottom-[25%] left-0 right-0 z-20 flex justify-center"
         >
-          <button className="bg-secondary text-white px-10 py-5 rounded-full flex items-center gap-3 font-bold tracking-widest text-[10px] uppercase shadow-2xl hover:bg-secondary/90 transition-all group overflow-hidden">
+          <button className="bg-primary text-white px-10 py-5 rounded-full flex items-center gap-3 font-bold tracking-widest text-[10px] uppercase shadow-2xl hover:bg-secondary transition-all group overflow-hidden">
             <span className="relative z-10">Get Started</span>
             <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
             
             {/* Subtle glow effect behind button */}
-            <div className="absolute inset-0 bg-primary/20 scale-0 group-hover:scale-150 transition-transform duration-700 blur-xl" />
+            <div className="absolute inset-0 bg-white/20 scale-0 group-hover:scale-150 transition-transform duration-700 blur-xl" />
           </button>
         </motion.div>
 

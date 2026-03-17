@@ -73,7 +73,7 @@ const Layout = ({ children }) => {
             <p className="text-slate-400 text-sm mb-4">Get travel tips and exclusive discounts directly to your inbox.</p>
             <div className="flex flex-col gap-2">
               <input className="bg-slate-800 border-none rounded-lg focus:ring-primary text-white text-sm py-3 px-4" placeholder="Your email address" type="email"/>
-              <button className="bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-lg text-sm transition-colors">Subscribe Now</button>
+              <button className="bg-primary hover:bg-secondary text-white font-bold py-3 rounded-lg text-sm transition-all shadow-lg shadow-primary/20">Subscribe Now</button>
             </div>
           </div>
         </div>

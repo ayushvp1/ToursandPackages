@@ -86,7 +86,7 @@ const Details = () => {
             {[
               { label: "Duration", val: "8 Days", icon: "calendar_today" },
               { label: "Group Size", val: "Max 12", icon: "group" },
-              { label: "Availability", val: "High", icon: "check_circle", color: "text-green-600" }
+              { label: "Availability", val: "High", icon: "check_circle", color: "text-primary" }
             ].map((stat, i) => (
               <motion.div 
                 key={i} 
@@ -181,7 +181,7 @@ const Details = () => {
                     <span className="text-slate-500 text-sm font-medium">/ person</span>
                   </div>
                 </div>
-                <div className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1.5 rounded-lg text-xs font-black">
+                <div className="bg-primary/10 text-primary px-3 py-1.5 rounded-lg text-xs font-black">
                   SAVE $200
                 </div>
               </div>
@@ -213,7 +213,7 @@ const Details = () => {
               </div>
               
               <div className="mt-8 flex items-center justify-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                <span className="material-symbols-outlined text-sm text-green-500">verified</span>
+                <span className="material-symbols-outlined text-sm text-primary">verified</span>
                 Free cancellation up to 30 days
               </div>
             </div>

@@ -160,7 +160,7 @@ const Booking = () => {
                 </div>
                 <div className="flex justify-between items-center mb-6">
                   <span className="text-slate-400 font-bold text-xs uppercase tracking-widest">Tax & Fees</span>
-                  <span className="font-black text-teal-500">INCLUDED</span>
+                  <span className="font-black text-primary">INCLUDED</span>
                 </div>
                 <div className="flex justify-between items-center pt-6 border-t-2 border-slate-900 dark:border-slate-100">
                   <span className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Total</span>
@@ -169,7 +169,7 @@ const Booking = () => {
               </div>
             </div>
             <div className="p-5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl flex items-start gap-4">
-              <span className="material-symbols-outlined text-teal-500 text-2xl">verified_user</span>
+              <span className="material-symbols-outlined text-primary text-2xl">verified_user</span>
               <p className="text-[10px] text-slate-500 font-bold leading-relaxed uppercase tracking-wider">Secure Checkout. Your data protected by AES-256 encryption.</p>
             </div>
           </motion.div>
