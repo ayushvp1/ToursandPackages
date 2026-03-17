@@ -386,9 +386,6 @@
             ${item.cost ? `<div style="background:#0F172A; color:#10B981; padding:4px 10px; border-radius:8px; font-size:.75rem; font-weight:800; border:1px solid #334155">${item.cost.replace('$', '₹')}</div>` : ""}
           </div>
           <p style="font-size:0.95rem; color:#475569; margin:0 0 1.2rem; line-height:1.6">${item.description}</p>
-          <div style="border-radius:14px; overflow:hidden; height:220px; background:#F1F5F9; margin-bottom:1.2rem; border:1px solid #E2E8F0">
-             <img src="https://loremflickr.com/800/600/${encodeURIComponent(item.title)},travel/all" style="width:100%; height:100%; object-fit:cover" loading="lazy">
-          </div>
           <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:1rem">
             ${item.must_try ? `<div class="tiw-info-tag" style="background:rgba(245,158,11,.05); color:#92400E; border:1px solid rgba(245,158,11,.1); margin:0"><span style="font-size:1.2rem">🥘</span> <b>Must Try:</b> ${item.must_try}</div>` : ""}
             ${item.tip ? `<div class="tiw-info-tag" style="background:rgba(16,185,129,.05); color:#065F46; border:1px solid rgba(16,185,129,.1); margin:0"><span style="font-size:1.2rem">💡</span> ${item.tip}</div>` : ""}
