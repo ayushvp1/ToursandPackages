@@ -217,14 +217,14 @@ ${poisBlock}
 
 RULES:
 1. Build a complete day itinerary from ${arrTime} to ${leaveBy}.
-2. Start with breakfast near the arrival station.
+2. The FIRST item MUST be the Arrival Station / Airport at time ${arrTime}: "${arrPt}". Name it exactly as provided and give its correct coordinates.
 3. Mix: food, cultural sites, local activities, rest stops, afternoon exploration.
-4. FINAL item must be travel to "${depPt}" at time "${leaveBy}".
+4. The FINAL item MUST be travel to "${depPt}" at time "${leaveBy}". Give its correct coordinates.
 5. Use real places — prefer the OSM list above, supplement with your own knowledge.
 6. Realistic durations: restaurants 45-60 min, major sights 60-90 min, quick stops 30 min.
 7. Local transport suggestions (walk/auto/bus) with rough INR cost and minutes.
 8. departure_alert must say exactly: "Leave by ${leaveBy}. Allow ${travelMins} min to reach ${depPt} by ${depTime}."
-9. For each item, MUST include "lat" and "lon" coordinates. Use the provided OSM coordinates when choosing those spots.
+9. For each item, MUST include "lat" and "lon" coordinates. Use the provided OSM coordinates when choosing OSM spots. For ${arrPt} and ${depPt}, you MUST provide accurate lat/lon coordinates for those specific locations in ${dest}.
 10. MANDATORY: You MUST include a "photo_query" field for EVERY item. It should be a 3-word specific description for an image search.
 11. MANDATORY: You MUST include at least one HIGH-END RESORT or HOTEL stop in the itinerary (e.g. for relaxation, tea, or stay).
 12. If dietary preference is VEG, suggest ONLY purely vegetarian restaurants.
