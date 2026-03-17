@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { Router } from "express";
-import { cachedGeocode, cachedPOIs, cachedTravelTime } from "../lib/cache.js";
+import { cachedGeocode, cachedPOIs, cachedTravelTime, usageTracker } from "../lib/cache.js";
 import { createLogger } from "../lib/logger.js";
 
 const router = Router();
@@ -65,12 +65,16 @@ async function callGroq(prompt) {
 
 async function _geocode(query) {
   const token = process.env.MAPBOX_ACCESS_TOKEN;
-  if (!token) return _geocodeFallback(query);
+  if (!token || usageTracker.isOverLimit) return _geocodeFallback(query);
 
   try {
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${token}&limit=1`;
     const res = await fetch(url);
     if (!res.ok) throw new Error("Mapbox geocoding failed");
+    
+    // Successful call, increment tracker
+    usageTracker.increment();
+    
     const data = await res.json();
     if (!data.features || !data.features.length) return null;
     const [lon, lat] = data.features[0].center;
@@ -130,12 +134,16 @@ async function _fetchPOIs(lat, lon) {
 
 async function _getTravelMinutes(lat1, lon1, lat2, lon2) {
   const token = process.env.MAPBOX_ACCESS_TOKEN;
-  if (!token) return _getTravelMinutesFallback(lat1, lon1, lat2, lon2);
+  if (!token || usageTracker.isOverLimit) return _getTravelMinutesFallback(lat1, lon1, lat2, lon2);
 
   try {
     const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${lon1},${lat1};${lon2},${lat2}?access_token=${token}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error("Mapbox directions failed");
+    
+    // Successful call, increment tracker
+    usageTracker.increment();
+    
     const data = await res.json();
     return Math.ceil((data.routes?.[0]?.duration || 1800) / 60);
   } catch (err) {
@@ -303,6 +311,7 @@ router.post("/", async (req, res) => {
       durationMs:          Date.now() - t0,
       generatedAt:         new Date().toISOString(),
       model:               GROQ_MODEL,
+      mapboxOverLimit:     usageTracker.isOverLimit
     };
 
     log.info("Itinerary generated", {

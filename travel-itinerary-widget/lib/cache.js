@@ -1,19 +1,50 @@
-// ═══════════════════════════════════════════════════════════
-//  lib/cache.js
-//  Lightweight in-memory TTL cache.
-//
-//  Why cache?
-//  - Geocode + Overpass results for the same city change slowly.
-//  - Saves ~1–2s of API round-trips on repeat visits.
-//  - Prevents hammering free third-party APIs unnecessarily.
-//
-//  Cache keys:
-//    geo:<query>             → { lat, lon }
-//    poi:<lat_3dp>:<lon_3dp> → POI array
-//    osrm:<lat1>:<lon1>:<lat2>:<lon2> → travel minutes
-//
-//  Itinerary results are NOT cached — each Claude call is
-//  unique (different times/interests, fresh creative output).
+import fs from "fs";
+import path from "path";
+
+const USAGE_FILE = path.join(process.cwd(), "mapbox_usage.json");
+const MAX_MAPBOX_REQUESTS = 10000;
+
+class UsageTracker {
+  constructor() {
+    this._count = 0;
+    this._load();
+  }
+
+  _load() {
+    try {
+      if (fs.existsSync(USAGE_FILE)) {
+        const data = JSON.parse(fs.readFileSync(USAGE_FILE, "utf8"));
+        this._count = data.count || 0;
+      }
+    } catch (err) {
+      console.error("Failed to load mapbox usage", err);
+    }
+  }
+
+  _save() {
+    try {
+      fs.writeFileSync(USAGE_FILE, JSON.stringify({ count: this._count }), "utf8");
+    } catch (err) {
+      console.error("Failed to save mapbox usage", err);
+    }
+  }
+
+  increment() {
+    this._count++;
+    this._save();
+  }
+
+  get count() {
+    return this._count;
+  }
+
+  get isOverLimit() {
+    return this._count >= MAX_MAPBOX_REQUESTS;
+  }
+}
+
+export const usageTracker = new UsageTracker();
+
 // ═══════════════════════════════════════════════════════════
 
 const DEFAULT_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours

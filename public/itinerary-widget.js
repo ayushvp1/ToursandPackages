@@ -573,36 +573,27 @@
     });
 
     // Initialize Map
-    renderMap(root, data.items || []);
+    renderMap(root, data);
 
     showPhase("itinerary");
     root.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  // ── Render Map (Mapbox GL JS) ───────────────────────────────
+  // ── Render Map (Hybrid with Fallback) ──────────────────────
   let mapInstance = null;
-  function renderMap(root, items) {
+  function renderMap(root, data) {
+    const items = data.items || [];
+    const isOverLimit = data._meta?.mapboxOverLimit || false;
     const token = script?.dataset?.mapboxToken || "pk.eyJ1IjoiYXl1c2h2cDEiLCJhIjoiY204ZHB4NmI5MHZwejJxcTJkb3hncGdmdyJ9.y7fS-x_M5x7W-x_M5x7W-x_M5x7W-x";
-    
-    if (!window.mapboxgl) {
-      if (!document.getElementById('tiw-mapbox-js')) {
-        const s = document.createElement('script');
-        s.id = 'tiw-mapbox-js';
-        s.src = 'https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js';
-        s.onload = () => renderMap(root, items);
-        document.head.appendChild(s);
-      } else {
-        setTimeout(() => renderMap(root, items), 200);
-      }
-      return;
-    }
 
     const mapEl = root.querySelector("#tiw-map");
     if (!mapEl) return;
-
+    
+    // Clear previous map instance reliably
     if (mapInstance) {
-      mapInstance.remove();
+      if (typeof mapInstance.remove === 'function') mapInstance.remove();
       mapInstance = null;
+      mapEl.innerHTML = "";
     }
 
     const validItems = items.filter(i => i.lat && i.lon);
@@ -612,8 +603,28 @@
     }
     root.querySelector("#tiw-map-container").style.display = "block";
 
+    if (isOverLimit) {
+      renderLeafletMap(root, mapEl, validItems);
+    } else {
+      renderMapboxMap(root, mapEl, validItems, token);
+    }
+  }
+
+  function renderMapboxMap(root, mapEl, validItems, token) {
+    if (!window.mapboxgl) {
+      if (!document.getElementById('tiw-mapbox-js')) {
+        const s = document.createElement('script');
+        s.id = 'tiw-mapbox-js';
+        s.src = 'https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js';
+        s.onload = () => renderMap(root, { items: validItems });
+        document.head.appendChild(s);
+      } else {
+        setTimeout(() => renderMap(root, { items: validItems }), 200);
+      }
+      return;
+    }
+
     mapboxgl.accessToken = token;
-    
     mapInstance = new mapboxgl.Map({
       container: mapEl,
       style: 'mapbox://styles/mapbox/light-v11',
@@ -626,11 +637,10 @@
       const bounds = new mapboxgl.LngLatBounds();
       const coords = [];
 
-      validItems.forEach((item, idx) => {
+      validItems.forEach((item) => {
         const cat = getCat(item.category);
         const markerEmoji = cat.emoji || "📍";
         
-        // Create custom marker element
         const el = document.createElement('div');
         el.className = 'tiw-marker';
         el.innerHTML = `<div style="background:${cat.color}; width:28px; height:28px; border:2px solid #fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; box-shadow:0 4px 10px rgba(0,0,0,0.25); cursor:pointer">${markerEmoji}</div>`;
@@ -648,35 +658,55 @@
       if (coords.length > 1) {
         mapInstance.addSource('route', {
           'type': 'geojson',
-          'data': {
-            'type': 'Feature',
-            'properties': {},
-            'geometry': {
-              'type': 'LineString',
-              'coordinates': coords
-            }
-          }
+          'data': { 'type': 'Feature', 'geometry': { 'type': 'LineString', 'coordinates': coords } }
         });
-
         mapInstance.addLayer({
-          'id': 'route',
-          'type': 'line',
-          'source': 'route',
-          'layout': {
-            'line-join': 'round',
-            'line-cap': 'round'
-          },
-          'paint': {
-            'line-color': '#14B8A6',
-            'line-width': 4,
-            'line-opacity': 0.6,
-            'line-dasharray': [1, 2]
-          }
+          'id': 'route', 'type': 'line', 'source': 'route',
+          'layout': { 'line-join': 'round', 'line-cap': 'round' },
+          'paint': { 'line-color': '#14B8A6', 'line-width': 4, 'line-opacity': 0.6, 'line-dasharray': [1, 2] }
         });
       }
-
       mapInstance.fitBounds(bounds, { padding: 40, animate: true });
     });
+  }
+
+  function renderLeafletMap(root, mapEl, validItems) {
+    if (!window.L) {
+      if (!document.getElementById('tiw-leaflet-js')) {
+        const s = document.createElement('script');
+        s.id = 'tiw-leaflet-js';
+        s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        s.onload = () => renderMap(root, { items: validItems, _meta: { mapboxOverLimit: true } });
+        document.head.appendChild(s);
+        
+        const l = document.createElement('link');
+        l.rel = 'stylesheet';
+        l.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+        document.head.appendChild(l);
+      } else {
+        setTimeout(() => renderMap(root, { items: validItems, _meta: { mapboxOverLimit: true } }), 200);
+      }
+      return;
+    }
+
+    const coords = validItems.map(i => [parseFloat(i.lat), parseFloat(i.lon)]);
+    mapInstance = L.map(mapEl, { scrollWheelZoom: false, attributionControl: false }).setView(coords[0], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstance);
+
+    validItems.forEach((item) => {
+      const cat = getCat(item.category);
+      const icon = L.divIcon({
+        html: `<div style="background:${cat.color}; width:24px; height:24px; border:2px solid #fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; box-shadow:0 0 10px rgba(0,0,0,0.5)">${cat.emoji || "📍"}</div>`,
+        className: '', iconSize: [24, 24], iconAnchor: [12, 12]
+      });
+      L.marker([item.lat, item.lon], { icon }).addTo(mapInstance)
+        .bindPopup(`<b style="color:#060F1C">${item.time} - ${item.title}</b><br><span style="color:#475569; font-size:11px">${item.category}</span>`);
+    });
+
+    if (coords.length > 1) {
+      L.polyline(coords, { color: '#14B8A6', weight: 3, opacity: 0.6, dashArray: '5, 10' }).addTo(mapInstance);
+    }
+    mapInstance.fitBounds(L.latLngBounds(coords), { padding: [30, 30] });
   }
 
   // ── Mount Widget ─────────────────────────────────────────────
