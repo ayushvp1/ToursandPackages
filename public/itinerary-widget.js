@@ -209,7 +209,12 @@
           <button class="tiw-btn-primary" id="tiw-btn-detect" style="font-size:.95rem;padding:.9rem 2.2rem">
             📍 Detect My Location &amp; Begin
           </button>
-          <p style="color:#1E3A5F;font-size:.72rem;margin-top:.75rem">Location used once. Never stored.</p>
+          <div style="margin-top:1.5rem">
+            <button class="tiw-btn-ghost" id="tiw-btn-manual" style="border-color:#E2E8F0;color:#64748B;font-size:.85rem;padding:.7rem 1.8rem">
+              Skip & Enter Manually
+            </button>
+          </div>
+          <p style="color:#1E3A5F;font-size:.72rem;margin-top:1.2rem;opacity:0.5">Location used once. Never stored.</p>
         </div>
       </div>
 
@@ -586,6 +591,12 @@
 
       // Generate button
       root.querySelector("#tiw-btn-generate").addEventListener("click", () => generate(root));
+
+      // Manual button
+      root.querySelector("#tiw-btn-manual").addEventListener("click", () => {
+        showPhase("setup");
+        renderInterests(root.querySelector("#tiw-interests"));
+      });
 
       // Reset button
       root.querySelector("#tiw-btn-reset").addEventListener("click", () => {

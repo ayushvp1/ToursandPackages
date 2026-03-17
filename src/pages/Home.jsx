@@ -45,12 +45,23 @@ const Home = () => {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, delay: 1 }}
           >
-            <button className="group relative overflow-hidden bg-primary text-white px-8 py-4 rounded-full text-base font-bold shadow-2xl transition-all hover:scale-105 active:scale-95 flex items-center gap-2 mx-auto">
+            <button 
+              onClick={() => document.getElementById('itinerary-planner').scrollIntoView({ behavior: 'smooth' })}
+              className="group relative overflow-hidden bg-primary text-white px-8 py-4 rounded-full text-base font-bold shadow-2xl transition-all hover:scale-105 active:scale-95 flex items-center gap-2 mx-auto"
+            >
               <span className="material-symbols-outlined fill-1">location_on</span>
               <span className="relative z-10">Detect My Location & Begin</span>
               <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
             </button>
-            <p className="text-white/30 text-[9px] mt-3 font-medium tracking-[0.2em] uppercase">Location used once. Never stored.</p>
+            <div className="mt-4 flex flex-col items-center gap-2">
+              <button 
+                onClick={() => document.getElementById('itinerary-planner').scrollIntoView({ behavior: 'smooth' })}
+                className="text-white/40 hover:text-white/70 text-xs font-bold uppercase tracking-widest transition-colors"
+              >
+                Or Enter Destination Manually
+              </button>
+              <p className="text-white/20 text-[9px] font-medium tracking-[0.2em] uppercase">Location used once. Never stored.</p>
+            </div>
           </motion.div>
         </div>
       </section>
