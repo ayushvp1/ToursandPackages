@@ -59,4 +59,18 @@ router.get("/reverse", async (req, res) => {
   }
 });
 
+// Vercel first-party IP geolocation: GET /api/geocode/ip
+router.get("/ip", (req, res) => {
+  const city = req.headers["x-vercel-ip-city"] || req.headers["x-real-ip-city"];
+  const region = req.headers["x-vercel-ip-country-region"];
+  const lat = req.headers["x-vercel-ip-latitude"];
+  const lon = req.headers["x-vercel-ip-longitude"];
+  
+  if (city) {
+    res.json({ city, region, lat: parseFloat(lat), lon: parseFloat(lon) });
+  } else {
+    res.status(404).json({ error: "Vercel headers missing or not on edge network" });
+  }
+});
+
 export default router;

@@ -290,11 +290,22 @@
     const orig = btn ? btn.innerHTML : "⚡ Map My Perfect Day";
     if (btn) { btn.innerHTML = "🛰️ Locating..."; btn.disabled = true; }
     try {
+      const apiBase = script.dataset.apiBase || "https://tours-and-packages.vercel.app";
       let city = null;
+      
+      // 1. Try first-party Vercel edge geocoding (Fastest & most reliable in prod)
       try {
-        const r1 = await fetch("https://ipapi.co/json/").then(r => r.json());
-        if(r1.city) city = r1.city + (r1.region ? `, ${r1.region}` : "");
+        const r0 = await fetch(`${apiBase}/api/geocode/ip`).then(r => r.json());
+        if(r0.city) city = r0.city + (r0.region ? `, ${r0.region}` : "");
       } catch(e) {}
+
+      // 2. Try third-party IP geocoding fallbacks
+      if (!city) {
+        try {
+          const r1 = await fetch("https://ipapi.co/json/").then(r => r.json());
+          if(r1.city) city = r1.city + (r1.region ? `, ${r1.region}` : "");
+        } catch(e) {}
+      }
       
       if (!city) {
         try {
