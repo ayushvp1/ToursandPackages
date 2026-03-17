@@ -205,13 +205,13 @@
 
         <div class="tiw-grid-2" style="margin-bottom:2.5rem">
           <div>
-            <label style="display:block; font-size:.75rem; font-weight:800; color:#94A3B8; margin-bottom:.8rem; text-transform:uppercase">Arrival Station / Airport</label>
+            <label style="display:block; font-size:.75rem; font-weight:800; color:#94A3B8; margin-bottom:.8rem; text-transform:uppercase">Arrival Location</label>
             <input type="text" id="tiw-input-arr-pt" placeholder="e.g. Kozhikode Station" value="Railway Station" style="width:100%; padding:1rem; border-radius:12px; border:1px solid #E2E8F0; background:#fff !important; margin-bottom:1rem">
             <label style="display:block; font-size:.75rem; font-weight:800; color:#94A3B8; margin-bottom:.8rem; text-transform:uppercase">Arrival Time</label>
             <input type="time" id="tiw-input-arr" value="09:00" style="width:100%; padding:1rem; border-radius:12px; border:1px solid #E2E8F0; background:#fff !important">
           </div>
           <div>
-            <label style="display:block; font-size:.75rem; font-weight:800; color:#94A3B8; margin-bottom:.8rem; text-transform:uppercase">Departure Station / Airport</label>
+            <label style="display:block; font-size:.75rem; font-weight:800; color:#94A3B8; margin-bottom:.8rem; text-transform:uppercase">Departure Location</label>
             <input type="text" id="tiw-input-dep-pt" placeholder="e.g. Kozhikode Station" value="Railway Station" style="width:100%; padding:1rem; border-radius:12px; border:1px solid #E2E8F0; background:#fff !important; margin-bottom:1rem">
             <label style="display:block; font-size:.75rem; font-weight:800; color:#94A3B8; margin-bottom:.8rem; text-transform:uppercase">Departure Time</label>
             <input type="time" id="tiw-input-dep" value="19:00" style="width:100%; padding:1rem; border-radius:12px; border:1px solid #E2E8F0; background:#fff !important">
@@ -338,7 +338,11 @@
       renderInterests(root.querySelector("#tiw-interests"));
       renderDietary(root.querySelector("#tiw-dietary"));
       const input = root.querySelector("#tiw-input-dest");
-      if (input && state.dest) input.value = state.dest;
+      if (input && state.dest) {
+        const titleCase = state.dest.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+        input.value = titleCase;
+        state.dest = titleCase;
+      }
     }
   }
 
