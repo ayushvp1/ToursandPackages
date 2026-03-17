@@ -6,7 +6,7 @@
  * ║    Usage:                                                 ║
  * ║    <div id="itinerary-widget"></div>                      ║
  * ║    <script                                                ║
- * ║      src="/itinerary-widget.js?v=2.0.11"                  ║
+ * ║      src="/itinerary-widget.js?v=2.0.12"                  ║
  * ║      data-api-base="http://localhost:3001"               ║
  * ║      data-target="#itinerary-widget">                     ║
  * ║    </script>                                              ║
@@ -39,11 +39,23 @@
 
     .tiw-root {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      color: #0F172A; line-height: 1.5;
-      background: #FFFFFF; border-radius: 20px;
+      color: #0F172A !important; line-height: 1.5;
+      background: #FFFFFF !important; border-radius: 20px;
       overflow: hidden; max-width: 800px; margin: 0 auto;
       box-shadow: 0 20px 50px rgba(0,0,0,0.08);
       border: 1px solid #F1F5F9;
+      text-align: left;
+    }
+
+    .tiw-root input {
+      background: #FFFFFF !important;
+      color: #0F172A !important;
+      border: 1px solid #E2E8F0 !important;
+      font-family: inherit;
+      -webkit-appearance: none;
+    }
+    .tiw-root input::placeholder {
+      color: #94A3B8 !important;
     }
 
     .tiw-phase { display: none; }
@@ -53,7 +65,7 @@
     @keyframes tiw-pulse { 0% { opacity: .5; } 50% { opacity: 1; } 100% { opacity: .5; } }
 
     .tiw-btn-primary {
-      background: #14B8A6; color: white; border: none;
+      background: #14B8A6; color: white !important; border: none;
       padding: .85rem 2rem; border-radius: 12px; font-weight: 700;
       cursor: pointer; transition: all .2s; font-size: .9rem;
       box-shadow: 0 4px 15px rgba(20,184,166,0.25);
@@ -65,7 +77,7 @@
     .tiw-btn-ghost {
       background: transparent; border: 1px solid #E2E8F0;
       padding: .65rem 1.25rem; border-radius: 10px; font-size: .8rem;
-      font-weight: 600; cursor: pointer; color: #64748B;
+      font-weight: 600; cursor: pointer; color: #64748B !important;
     }
 
     .tiw-card {
@@ -161,7 +173,7 @@
       <!-- PHASE: WELCOME -->
       <div id="tiw-ph-welcome" class="tiw-phase tiw-active" style="padding:4rem 2rem; text-align:center">
         <div style="font-size:3rem; margin-bottom:1.5rem">🌏</div>
-        <h2 style="font-family:'Playfair Display',serif; font-size:2.2rem; margin-bottom:1rem">AI Trip Planner</h2>
+        <h2 style="font-family:'Playfair Display',serif; font-size:2.2rem; margin-bottom:1rem; color:#0F172A">AI Trip Planner</h2>
         <p style="color:#64748B; margin-bottom:2.5rem; max-width:400px; margin-left:auto; margin-right:auto">
           Arriving at a station? We'll design your perfect day with curated stops and 3D maps.
         </p>
@@ -173,7 +185,7 @@
 
       <!-- PHASE: SETUP -->
       <div id="tiw-ph-setup" class="tiw-phase" style="padding:2.5rem 1.5rem">
-        <h3 style="font-size:1.2rem; font-weight:800; margin-bottom:2rem; border-left:4px solid #14B8A6; padding-left:1rem">Trip Details</h3>
+        <h3 style="font-size:1.2rem; font-weight:800; margin-bottom:2rem; border-left:4px solid #14B8A6; padding-left:1rem; color:#0F172A">Trip Details</h3>
         
         <div style="margin-bottom:2rem">
           <label style="display:block; font-size:.7rem; font-weight:800; text-transform:uppercase; color:#94A3B8; margin-bottom:.7rem">Where are you heading?</label>
@@ -211,7 +223,7 @@
       <div id="tiw-ph-loading" class="tiw-phase" style="padding:5rem 2rem; text-align:center">
         <div style="width:60px; height:60px; border:4px solid #F1F5F9; border-top-color:#14B8A6; border-radius:50%; animation:tiw-spin 1s linear infinite; margin:0 auto 2rem"></div>
         <style>@keyframes tiw-spin { to { transform: rotate(360deg); } }</style>
-        <h3 id="tiw-loading-title" style="font-size:1.4rem; font-weight:700; margin-bottom:.5rem">Crafting Your Vision...</h3>
+        <h3 id="tiw-loading-title" style="font-size:1.4rem; font-weight:700; margin-bottom:.5rem; color:#0F172A">Crafting Your Vision...</h3>
         <p id="tiw-loading-sub" style="color:#64748B; font-size:.9rem">Our AI is mapping the best resorts, cafes, and spots for your day tour.</p>
       </div>
 
@@ -278,20 +290,43 @@
     }
 
     try {
-      // Primary: ipapi.co
-      const res = await fetch("https://ipapi.co/json/").catch(() => null);
-      let data = res && res.ok ? await res.json() : null;
-      
-      // Fallback: ip-api.com (Note: only works on HTTP or with proxy, but we try as last resort)
-      if (!data || !data.city) {
-        // try a simple cloudflare trace if possible or just proceed
-        data = null;
+      // Primary: ipinfo.io (no token = limited) or similar
+      let data = null;
+      try {
+        const res = await fetch("https://ipapi.co/json/");
+        if (res.ok) data = await res.json();
+      } catch (e) {
+        console.warn("ipapi.co failed, trying fallback");
+        // Fallback: simple cloudflare cdn-cgi trace
+        const res = await fetch("https://1.1.1.1/cdn-cgi/trace");
+        if (res.ok) {
+           // This is text based, harder to parse but reliable for IP. 
+           // Let's stick to JSON ones for now.
+        }
       }
 
       if (data && data.city) {
         state.dest = data.city + (data.region ? `, ${data.region}` : "");
         const input = root.querySelector("#tiw-input-dest");
         if (input) input.value = state.dest;
+      } else {
+         // Try Browser Geolocation as last resort (requires user permission)
+         if ("geolocation" in navigator) {
+            const pos = await new Promise((resolve, reject) => {
+              navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+            }).catch(() => null);
+            
+            if (pos) {
+              const apiBase = script.dataset.apiBase || "http://localhost:3001";
+              const revRes = await fetch(`${apiBase}/api/geocode/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
+              if (revRes.ok) {
+                const revData = await revRes.json();
+                state.dest = revData.city;
+                const input = root.querySelector("#tiw-input-dest");
+                if (input) input.value = state.dest;
+              }
+            }
+         }
       }
     } catch (e) {
       console.warn("Location detection failed", e);
@@ -303,6 +338,9 @@
       showPhase("setup");
       renderInterests(root.querySelector("#tiw-interests"));
       renderDietary(root.querySelector("#tiw-dietary"));
+      // Ensure values are refreshed in inputs
+      const input = root.querySelector("#tiw-input-dest");
+      if (input && state.dest) input.value = state.dest;
     }
   }
 
@@ -377,7 +415,7 @@
           <div style="width:12px; height:12px; border-radius:50%; background:${cat.color}; border:2px solid white; box-shadow:0 0 0 2px ${cat.light}; margin:6px 0 0 auto"></div>
           <div style="color:#334155;font-size:.67rem;font-weight:600;margin-top:5px;text-align:center">${item.time}</div>
         </div>
-        <div class="tiw-stop-card" style="border-left-color:${cat.color}">
+        <div class="tiw-stop-card" style="border-left-color:${cat.color}; background:#FFFFFF">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;margin-bottom:.55rem">
             <div>
               <div style="display:flex;align-items:center;gap:5px;margin-bottom:.3rem;flex-wrap:wrap">
