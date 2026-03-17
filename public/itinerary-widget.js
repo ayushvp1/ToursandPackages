@@ -6,7 +6,7 @@
  * ║    Usage:                                                 ║
  * ║    <div id="itinerary-widget"></div>                      ║
  * ║    <script                                                ║
- * ║      src="/itinerary-widget.js?v=2.0.9"                   ║
+ * ║      src="/itinerary-widget.js?v=2.0.10"                  ║
  * ║      data-api-base="http://localhost:3001"               ║
  * ║      data-target="#itinerary-widget">                     ║
  * ║    </script>                                              ║
@@ -330,7 +330,10 @@
 
       if (!res.ok) throw new Error("API failed");
       const data = await res.json();
-      renderItinerary(root, data);
+      
+      // The backend returns { success: true, itinerary: { ... } }
+      const itinerary = data.itinerary || data; 
+      renderItinerary(root, itinerary);
     } catch (err) {
       alert(`Error: ${err.message}`);
       showPhase("setup");
