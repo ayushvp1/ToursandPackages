@@ -414,9 +414,33 @@
         const popup = new mapboxgl.Popup({ offset: 15, closeButton: false }).setHTML(`<div style="font-weight:700;font-size:12px;color:#0F172A;white-space:nowrap">${i.title}</div>`);
         new mapboxgl.Marker(el).setLngLat([parseFloat(i.lon), parseFloat(i.lat)]).setPopup(popup).addTo(mapInstance);
         b.extend([parseFloat(i.lon), parseFloat(i.lat)]);
-        coords.push(`${i.lon},${i.lat}`);
       });
-      if (coords.length > 1) {
+
+      // Greedy Algorithm to sort coordinates by shortest distance (Nearest Neighbor)
+      if (items.length > 1) {
+        let unvisited = [...items];
+        let ordered = [];
+        let current = unvisited.shift(); // Start at the first location (Arrival)
+        ordered.push(current);
+
+        while (unvisited.length > 0) {
+          let nearestIdx = 0;
+          let minDist = Infinity;
+          for (let i = 0; i < unvisited.length; i++) {
+            const dx = parseFloat(current.lon) - parseFloat(unvisited[i].lon);
+            const dy = parseFloat(current.lat) - parseFloat(unvisited[i].lat);
+            const dist = dx * dx + dy * dy; // Euclidean distance squared
+            if (dist < minDist) {
+              minDist = dist;
+              nearestIdx = i;
+            }
+          }
+          current = unvisited.splice(nearestIdx, 1)[0];
+          ordered.push(current);
+        }
+        
+        const coords = ordered.map(i => `${i.lon},${i.lat}`);
+        
         try {
           const res = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${coords.join(';')}?geometries=geojson&access_token=${token}`);
           const json = await res.json();
