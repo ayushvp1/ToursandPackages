@@ -63,12 +63,16 @@ async function callGroq(prompt) {
 
 // ── Raw API helpers (passed into cache wrappers) ─────────────
 
-async function _geocode(query) {
+async function _geocode(query, proximity = null) {
   const token = process.env.MAPBOX_ACCESS_TOKEN;
   if (!token || usageTracker.isOverLimit) return _geocodeFallback(query);
 
   try {
-    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${token}&limit=1`;
+    let url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${token}&limit=1&types=poi,address,landmark`;
+    if (proximity) {
+      url += `&proximity=${proximity.lon},${proximity.lat}`;
+    }
+    
     const res = await fetch(url);
     if (!res.ok) throw new Error("Mapbox geocoding failed");
     
@@ -76,8 +80,22 @@ async function _geocode(query) {
     usageTracker.increment();
     
     const data = await res.json();
-    if (!data.features || !data.features.length) return null;
-    const [lon, lat] = data.features[0].center;
+    if (!data.features || !data.features.length) {
+      // If POI search fails, try a broader search but still biased
+      const broadUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${token}&limit=1${proximity ? `&proximity=${proximity.lon},${proximity.lat}` : ""}`;
+      const broadRes = await fetch(broadUrl);
+      const broadData = await broadRes.json();
+      if (!broadData.features || !broadData.features.length) return null;
+      
+      // Only return if it's not JUST the city center of a completely different place
+      const feat = broadData.features[0];
+      if (feat.relevance < 0.5) return null;
+      const [lon, lat] = feat.center;
+      return { lat, lon };
+    }
+
+    const feat = data.features[0];
+    const [lon, lat] = feat.center;
     return { lat, lon };
   } catch (err) {
     log.error("Mapbox geocode error, falling back", err);
@@ -253,7 +271,18 @@ router.post("/", async (req, res) => {
 
   try {
     // Step 1: Geocode destination (cached 6h)
-    const coords = await cachedGeocode(dest, _geocode).catch(() => null);
+    const coords = await cachedGeocode(dest, async (q) => {
+      // For the main city, we want a broad search (place/locality)
+      const token = process.env.MAPBOX_ACCESS_TOKEN;
+      if (!token || usageTracker.isOverLimit) return _geocodeFallback(q);
+      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${token}&limit=1&types=place,locality`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!data.features || !data.features.length) return _geocodeFallback(q);
+      usageTracker.increment();
+      const [lon, lat] = data.features[0].center;
+      return { lat, lon };
+    }).catch(() => null);
 
     // Step 2: POIs + travel time in parallel (both cached)
     const [pois, travelMins] = await Promise.all([
@@ -308,17 +337,23 @@ router.post("/", async (req, res) => {
     if (!usageTracker.isOverLimit && process.env.MAPBOX_ACCESS_TOKEN) {
       log.debug("Verifying stop coordinates with Mapbox", { reqId });
       const verifiedItems = await Promise.all((itinerary.items || []).map(async (item) => {
-        // Search for the specific place within the destination city
+        // Search for the specific place with proximity bias towards city center
         const query = `${item.title}, ${dest}`;
         try {
-          const realCoords = await cachedGeocode(query, _geocode);
+          const realCoords = await cachedGeocode(query, _geocode, coords);
           if (realCoords) {
+            // Check if it's suspiciously close to the city center (often Mapbox's fallback)
+            const dist = Math.sqrt(Math.pow(realCoords.lat - coords.lat, 2) + Math.pow(realCoords.lon - coords.lon, 2));
+            if (dist < 0.0001 && item.title.toLowerCase().indexOf(dest.toLowerCase()) === -1) {
+              // Too close to center and likely a fallback, keep AI coords if they seem more specific
+              return item;
+            }
             return { ...item, lat: realCoords.lat, lon: realCoords.lon };
           }
         } catch (e) {
           log.warn(`Coord verification failed for ${item.title}`, e);
         }
-        return item; // Fallback to AI coords if lookup fails
+        return item; 
       }));
       itinerary.items = verifiedItems;
     }

@@ -120,11 +120,12 @@ export const cache = new TTLCache();
  * @param {Function} geocodeFn
  * @returns {Promise<{lat:number,lon:number}|null>}
  */
-export async function cachedGeocode(query, geocodeFn) {
-  const key = `geo:${query.toLowerCase().trim()}`;
+export async function cachedGeocode(query, geocodeFn, proximity = null) {
+  const proxKey = proximity ? `:${TTLCache.coordKey(proximity.lat)}:${TTLCache.coordKey(proximity.lon)}` : "";
+  const key = `geo:${query.toLowerCase().trim()}${proxKey}`;
   const hit = cache.get(key);
   if (hit) return hit;
-  const result = await geocodeFn(query);
+  const result = await geocodeFn(query, proximity);
   if (result) cache.set(key, result);
   return result;
 }
