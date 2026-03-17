@@ -68,21 +68,21 @@ const Home = () => {
             <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Destination</label>
             <div className="relative">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">location_on</span>
-              <input className="w-full pl-10 border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-lg focus:ring-primary focus:border-primary border p-2" placeholder="Where to?" type="text"/>
+              <input className="w-full pl-10 border-slate-200 bg-white text-slate-900 rounded-lg focus:ring-primary focus:border-primary border p-2" placeholder="Where to?" type="text"/>
             </div>
           </div>
           <div className="flex flex-col gap-2">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Date</label>
             <div className="relative">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">calendar_today</span>
-              <input className="w-full pl-10 border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-lg focus:ring-primary focus:border-primary border p-2" type="date"/>
+              <input className="w-full pl-10 border-slate-200 bg-white text-slate-900 rounded-lg focus:ring-primary focus:border-primary border p-2" type="date"/>
             </div>
           </div>
           <div className="flex flex-col gap-2">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Price Range</label>
             <div className="relative">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">payments</span>
-              <select className="w-full pl-10 border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-lg focus:ring-primary focus:border-primary appearance-none border p-2">
+              <select className="w-full pl-10 border-slate-200 bg-white text-slate-900 rounded-lg focus:ring-primary focus:border-primary appearance-none border p-2">
                 <option>All Prices</option>
                 <option>₹0 - ₹1,000</option>
                 <option>₹1,000 - ₹3,000</option>
