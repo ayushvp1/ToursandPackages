@@ -97,16 +97,16 @@ const Home = () => {
         <motion.div 
           initial={{ y: 40, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
-          viewport={{ once: true }}
+          viewport={{ once: false, amount: 0.1 }}
           transition={{ duration: 0.8 }}
           className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6"
         >
           <div>
             <motion.h3 
               initial={{ x: -50, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              viewport={{ once: true }}
-              className="text-4xl font-black mb-4"
+            whileInView={{ x: 0, opacity: 1 }}
+            viewport={{ once: false, amount: 0.1 }}
+            className="text-4xl font-black mb-4"
             >
               Featured Experiences
             </motion.h3>
@@ -124,7 +124,7 @@ const Home = () => {
         <motion.div 
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: false, amount: 0.1, margin: "-100px" }}
           variants={{
             hidden: { opacity: 0 },
             visible: {
@@ -208,7 +208,7 @@ const Home = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.5 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
+            viewport={{ once: false, amount: 0.1 }}
             className="absolute -top-10 left-1/2 -translate-x-1/2 text-[12rem] font-black text-slate-100 dark:text-slate-800/10 pointer-events-none select-none"
           >
             STORY
@@ -221,7 +221,7 @@ const Home = () => {
         <motion.div 
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={{ once: false, amount: 0.1, margin: "-50px" }}
           variants={{
             hidden: { opacity: 0 },
             visible: {

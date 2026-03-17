@@ -73,7 +73,7 @@ const Details = () => {
           <motion.div 
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
+            viewport={{ once: false, amount: 0.1 }}
             variants={{
               hidden: { opacity: 0 },
               visible: {
@@ -128,7 +128,7 @@ const Details = () => {
             <motion.h3 
               initial={{ x: -20, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
-              viewport={{ once: true }}
+              viewport={{ once: false, amount: 0.1 }}
               className="text-2xl font-bold mb-8 flex items-center gap-3"
             >
               <div className="w-2 h-8 bg-primary rounded-full"></div>
@@ -144,7 +144,7 @@ const Details = () => {
                   key={i} 
                   initial={{ opacity: 0, x: 30 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
+                  viewport={{ once: false, amount: 0.1, margin: "-50px" }}
                   transition={{ duration: 0.6, delay: i * 0.1 }}
                   className="relative pl-12 group"
                 >
