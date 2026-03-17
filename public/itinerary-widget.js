@@ -119,8 +119,9 @@
     }
 
     .tiw-info-tag {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 4px 10px; border-radius: 7px; font-size: .73rem;
+      display: flex; align-items: center; gap: 8px;
+      padding: .85rem 1.25rem; border-radius: 12px; font-size: .8rem;
+      font-weight: 600; width: 100%; margin-bottom: .5rem;
     }
 
     .tiw-interest-chip {
@@ -181,11 +182,19 @@
     { id: "adventure", label: "🧗 Adventure" },
     { id: "heritage",  label: "🏯 Heritage" },
     { id: "nightlife", label: "🎶 Nightlife" },
+    { id: "photography", label: "📸 Photography" },
+  ];
+
+  // ── Dietary List ─────────────────────────────────────────────
+  const DIETARY_OPTIONS = [
+    { id: "veg", label: "🥦 Veg Only" },
+    { id: "non-veg", label: "🍗 Non-Veg Included" }
   ];
 
   // ── Widget State ─────────────────────────────────────────────
   const state = {
     activeInterests: ["food", "culture"],
+    dietaryPreference: "non-veg",
     userCity: "",
     currentPhase: "welcome",
   };
@@ -252,6 +261,10 @@
               </div>
             </div>
             <div style="margin-bottom:1.5rem">
+              <label class="tiw-lbl">Dietary Preference</label>
+              <div id="tiw-dietary" style="display:flex;gap:.45rem"></div>
+            </div>
+            <div style="margin-bottom:1.5rem">
               <label class="tiw-lbl">My Interests</label>
               <div id="tiw-interests" style="display:flex;flex-wrap:wrap;gap:.45rem"></div>
             </div>
@@ -288,7 +301,8 @@
           <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 0%,rgba(20,184,166,0.05),transparent 60%);pointer-events:none"></div>
           <p id="tiw-eyebrow" style="color:#14B8A6;font-size:.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.4rem">Your Day in</p>
           <h2 id="tiw-city" style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,3rem);font-weight:700;color:#0F172A;margin-bottom:.4rem">—</h2>
-          <p id="tiw-tagline" style="color:#334155;font-style:italic;font-size:.9rem;margin-bottom:1.5rem">—</p>
+          <p id="tiw-tagline" style="color:#334155;font-style:italic;font-size:1rem;margin-bottom:.5rem">—</p>
+          <div id="tiw-pref-summary" style="display:flex;justify-content:center;gap:.7rem;margin-bottom:1.5rem;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#94A3B8"></div>
           <div id="tiw-badges" style="display:flex;justify-content:center;gap:.65rem;flex-wrap:wrap;margin-bottom:1rem"></div>
           <div id="tiw-alert" style="display:none;margin:0 auto;max-width:440px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.25);border-radius:100px;padding:.45rem 1.1rem;font-size:.8rem;color:#FB7185;display:inline-flex;align-items:center;gap:5px"></div>
         </div>
@@ -338,6 +352,24 @@
     });
   }
 
+  // ── Render Dietary Options ───────────────────────────────────
+  function renderDietary(container) {
+    if (!container) return;
+    container.innerHTML = DIETARY_OPTIONS.map((o) => {
+      const active = state.dietaryPreference === o.id;
+      return `<div class="tiw-interest-chip ${active ? "active" : "inactive"}" data-id="${o.id}">${o.label}</div>`;
+    }).join("");
+
+    container.addEventListener("click", (e) => {
+      const chip = e.target.closest(".tiw-interest-chip");
+      if (!chip) return;
+      state.dietaryPreference = chip.dataset.id;
+      container.querySelectorAll(".tiw-interest-chip").forEach(c => {
+        c.className = c.dataset.id === state.dietaryPreference ? "tiw-interest-chip active" : "tiw-interest-chip inactive";
+      });
+    });
+  }
+
   // ── Loading Progress ─────────────────────────────────────────
   function setLoad(msg, pct, step) {
     const msgEl = document.getElementById("tiw-load-msg");
@@ -374,10 +406,12 @@
         }
         showPhase("setup");
         renderInterests(root.querySelector("#tiw-interests"));
+        renderDietary(root.querySelector("#tiw-dietary"));
       },
       () => {
         showPhase("setup");
         renderInterests(root.querySelector("#tiw-interests"));
+        renderDietary(root.querySelector("#tiw-dietary"));
       }
     );
   }
@@ -423,6 +457,7 @@
           arrivalTime:    arrTime || "09:00",
           departureTime:  depTime || "19:00",
           interests: state.activeInterests,
+          dietaryPreference: state.dietaryPreference,
         }),
       });
 
@@ -456,6 +491,15 @@
       .map((b) => `<div class="tiw-badge"><span style="font-size:14px">${b.icon}</span>${b.text}</div>`)
       .join("");
 
+    // Preference summary
+    const diet = DIETARY_OPTIONS.find(o => o.id === state.dietaryPreference)?.label || "Standard";
+    root.querySelector("#tiw-pref-summary").innerHTML = `
+      <span>PREFERENCES:</span>
+      <span style="color:#14B8A6">${diet}</span>
+      <span>•</span>
+      <span style="color:#14B8A6">${state.activeInterests.length} Interests</span>
+    `;
+
     // Departure alert
     if (data.departure_alert) {
       const alertEl = root.querySelector("#tiw-alert");
@@ -488,6 +532,18 @@
             ${item.cost ? `<div style="background:#060F1C;border:1px solid #1E3A5F;border-radius:7px;padding:3px 9px;font-size:.7rem;color:#34D399;white-space:nowrap;flex-shrink:0">${item.cost.replace(/\$/g, "₹")}</div>` : ""}
           </div>
           ${item.description ? `<p style="margin:.45rem 0 .65rem;font-size:.84rem;color:#1E293B;line-height:1.65">${item.description}</p>` : ""}
+          ${item.photo_query ? `
+            <div style="margin: 1.2rem 0; border-radius: 20px; overflow: hidden; height: 200px; background: #F8FAFC; position: relative; border: 1px solid #F1F5F9; box-shadow: inset 0 2px 10px rgba(0,0,0,0.02)">
+              <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #94A3B8; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase">
+                <span style="animation: tiw-pulse 1.5s infinite">📸 Gathering Vision...</span>
+              </div>
+              <img src="https://loremflickr.com/800/600/${encodeURIComponent(item.photo_query)},travel/all"
+                style="width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.8s ease"
+                onload="this.style.opacity='1'; this.previousElementSibling.style.display='none'"
+                onerror="this.src='https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=800&auto=format&fit=crop'; this.style.opacity='1'; this.previousElementSibling.style.display='none'"
+              />
+            </div>
+          ` : ""}
           <div style="display:flex;flex-wrap:wrap;gap:.4rem">
             ${item.must_try ? `<div class="tiw-info-tag" style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);color:#FCD34D"><span style="font-size:12px">⭐</span>${item.must_try}</div>` : ""}
             ${item.tip ? `<div class="tiw-info-tag" style="background:rgba(20,184,166,.06);border:1px solid rgba(20,184,166,.15);color:#5EEAD4"><span style="font-size:12px">💡</span>${item.tip}</div>` : ""}
@@ -596,6 +652,7 @@
       root.querySelector("#tiw-btn-manual").addEventListener("click", () => {
         showPhase("setup");
         renderInterests(root.querySelector("#tiw-interests"));
+        renderDietary(root.querySelector("#tiw-dietary"));
       });
 
       // Reset button

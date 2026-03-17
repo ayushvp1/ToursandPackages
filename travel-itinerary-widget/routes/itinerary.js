@@ -36,7 +36,7 @@ async function callGroq(prompt) {
       messages: [
         {
           role:    "system",
-          content: "You are an expert local travel guide. Always respond with a single valid JSON object — no markdown, no explanation text.",
+          content: "You are an expert local travel guide. You specialization is in LUXURY and PREMIUM travel. You always include at least one resort or hotel recommendation in every plan. You correctly identify and highlight VEG vs NON-VEG food options. Always respond with a single valid JSON object — no markdown, no explanation text.",
         },
         {
           role:    "user",
@@ -89,6 +89,8 @@ async function _fetchPOIs(lat, lon) {
       node["amenity"="place_of_worship"](around:5000,${lat},${lon});
       node["tourism"="viewpoint"](around:6000,${lat},${lon});
       node["leisure"="beach"](around:6000,${lat},${lon});
+      node["tourism"="hotel"](around:8000,${lat},${lon});
+      node["tourism"="resort"](around:8000,${lat},${lon});
     );
     out body;
   `.trim();
@@ -132,7 +134,7 @@ function subtractMinutes(timeStr, mins) {
 
 // ── Prompt builder ───────────────────────────────────────────
 
-function buildPrompt({ dest, arrPt, depPt, arrTime, depTime, interests, pois, travelMins }) {
+function buildPrompt({ dest, arrPt, depPt, arrTime, depTime, interests, dietaryPreference, pois, travelMins }) {
   const buffer  = travelMins + 25;
   const leaveBy = subtractMinutes(depTime, buffer);
 
@@ -154,6 +156,7 @@ TRIP BRIEF:
 - Road travel to departure: ~${travelMins} min + 25 min buffer
 - MUST LEAVE BY: ${leaveBy}
 - Interests: ${interests.join(", ")}
+- Dietary Preference: ${dietaryPreference === 'veg' ? 'STRICT VEGETARIAN (Only suggest Pure Veg places)' : 'NON-VEGETARIAN (Can suggest places with meat/seafood)'}
 
 REAL LOCAL PLACES (OpenStreetMap data):
 ${poisBlock}
@@ -168,6 +171,12 @@ RULES:
 7. Local transport suggestions (walk/auto/bus) with rough INR cost and minutes.
 8. departure_alert must say exactly: "Leave by ${leaveBy}. Allow ${travelMins} min to reach ${depPt} by ${depTime}."
 9. For each item, MUST include "lat" and "lon" coordinates. Use the provided OSM coordinates when choosing those spots.
+10. MANDATORY: You MUST include a "photo_query" field for EVERY item. It should be a 3-word specific description for an image search.
+11. MANDATORY: You MUST include at least one HIGH-END RESORT or HOTEL stop in the itinerary (e.g. for relaxation, tea, or stay).
+12. If dietary preference is VEG, suggest ONLY purely vegetarian restaurants.
+13. If dietary preference is NON-VEG, you can suggest places known for meat/seafood (like Karim's in Delhi).
+14. Traffic: Mention typical ${dest} traffic in descriptions for transport stops.
+15. Focus on EXOTIC and STYLISH places that would look good in a travel brochure.
 
 Return this exact JSON structure:
 {
@@ -189,7 +198,8 @@ Return this exact JSON structure:
       "getting_there": "transport mode + INR cost + minutes",
       "cost": "INR range or Free",
       "lat": 0.0,
-      "lon": 0.0
+      "lon": 0.0,
+      "photo_query": "search term"
     }
   ]
 }`,
@@ -199,7 +209,7 @@ Return this exact JSON structure:
 // ── Route handler ─────────────────────────────────────────────
 
 router.post("/", async (req, res) => {
-  const { dest, arrivalPoint, departurePoint, arrivalTime, departureTime, interests } = req.body;
+  const { dest, arrivalPoint, departurePoint, arrivalTime, departureTime, interests, dietaryPreference } = req.body;
 
   const reqId = Math.random().toString(36).slice(2, 8);
   log.info("Request received", { reqId, dest, arrivalTime, departureTime });
@@ -239,12 +249,14 @@ router.post("/", async (req, res) => {
       arrTime: arrivalTime,
       depTime: departureTime,
       interests,
+      dietaryPreference,
       pois,
       travelMins,
     });
 
     log.debug("Calling Groq", { reqId, model: GROQ_MODEL });
     const rawText = await callGroq(prompt);
+    console.log("--- RAW AI RESPONSE ---", rawText);
 
     // Step 4: Parse
     let itinerary;
@@ -254,6 +266,7 @@ router.post("/", async (req, res) => {
       log.error("Groq returned malformed JSON", { reqId, preview: rawText.slice(0, 200) });
       return res.status(500).json({ error: "AI returned malformed response — please retry." });
     }
+    console.log("--- PARSED ITINERARY ---", itinerary);
 
     itinerary._meta = {
       poisFound:           pois.length,
