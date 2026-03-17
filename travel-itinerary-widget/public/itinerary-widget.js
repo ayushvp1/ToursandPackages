@@ -608,16 +608,14 @@
     }
   }
 
-  function renderMapboxMap(root, mapEl, validItems, token, data) { // Accept data
+  function renderMapboxMap(root, mapEl, validItems, token, data) {
     if (!window.mapboxgl) {
       if (!document.getElementById('tiw-mapbox-js')) {
-        // Load CSS
         const l = document.createElement('link');
         l.rel = 'stylesheet';
         l.href = 'https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css';
         document.head.appendChild(l);
         
-        // Load JS
         const s = document.createElement('script');
         s.id = 'tiw-mapbox-js';
         s.src = 'https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js';
@@ -630,70 +628,72 @@
     }
 
     mapboxgl.accessToken = token;
+    
+    // Ensure container has visibility and height for Mapbox to see it
+    mapEl.style.height = '320px';
+    mapEl.style.width = '100%';
+
     mapInstance = new mapboxgl.Map({
       container: mapEl,
-      style: 'mapbox://styles/mapbox/light-v11',
+      style: 'mapbox://styles/mapbox/streets-v12',
       center: [parseFloat(validItems[0].lon), parseFloat(validItems[0].lat)],
-      zoom: 12,
-      attributionControl: false
+      zoom: 13,
+      attributionControl: false,
+      failIfMajorPerformanceCaveat: false
     });
 
+    const triggerResize = () => {
+      if (mapInstance) {
+        mapInstance.resize();
+        // Force a re-center to ensure we aren't seeing grey edges
+        const bounds = new mapboxgl.LngLatBounds();
+        validItems.forEach(i => bounds.extend([parseFloat(i.lon), parseFloat(i.lat)]));
+        mapInstance.fitBounds(bounds, { padding: 40, animate: false });
+      }
+    };
+
     mapInstance.on('load', async () => {
+      triggerResize();
+      
       const bounds = new mapboxgl.LngLatBounds();
       const coords = [];
 
       validItems.forEach((item) => {
         const cat = getCat(item.category);
-        const markerEmoji = cat.emoji || "📍";
-        
         const el = document.createElement('div');
         el.className = 'tiw-marker';
-        el.innerHTML = `<div style="background:${cat.color}; width:28px; height:28px; border:2px solid #fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; box-shadow:0 4px 10px rgba(0,0,0,0.25); cursor:pointer">${markerEmoji}</div>`;
+        el.innerHTML = `<div style="background:${cat.color}; width:28px; height:28px; border:2px solid #fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; box-shadow:0 4px 10px rgba(0,0,0,0.25); cursor:pointer">${cat.emoji || "📍"}</div>`;
 
         new mapboxgl.Marker(el)
           .setLngLat([parseFloat(item.lon), parseFloat(item.lat)])
           .setPopup(new mapboxgl.Popup({ offset: 25 })
-            .setHTML(`<b style="color:#0F172A; font-family:sans-serif">${item.time} - ${item.title}</b><br><span style="color:#64748B; font-size:11px">${item.category}</span>`))
+            .setHTML(`<b style="color:#0F172A">${item.time} - ${item.title}</b>`))
           .addTo(mapInstance);
 
         bounds.extend([parseFloat(item.lon), parseFloat(item.lat)]);
         coords.push(`${item.lon},${item.lat}`);
       });
 
-      // Fetch Real Road Route (Shortest Path connecting all stops)
       if (coords.length > 1) {
         try {
-          const query = coords.join(';');
-          // 'overview=full' gives high-fidelity road paths
-          const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${query}?geometries=geojson&overview=full&access_token=${token}`;
+          const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coords.join(';')}?geometries=geojson&overview=full&access_token=${token}`;
           const res = await fetch(url);
           const json = await res.json();
-          
-          if (json.routes && json.routes[0]) {
-            const geometry = json.routes[0].geometry;
-            mapInstance.addSource('route', { 'type': 'geojson', 'data': { 'type': 'Feature', 'geometry': geometry } });
+          if (json.routes?.[0]) {
+            mapInstance.addSource('route', { 'type': 'geojson', 'data': { 'type': 'Feature', 'geometry': json.routes[0].geometry } });
             mapInstance.addLayer({
               'id': 'route', 'type': 'line', 'source': 'route',
               'layout': { 'line-join': 'round', 'line-cap': 'round' },
-              'paint': { 
-                'line-color': '#14B8A6', 
-                'line-width': 5, 
-                'line-opacity': 0.8,
-                'line-gradient': [
-                  'interpolate',
-                  ['linear'],
-                  ['line-progress'],
-                  0, 'rgba(20,184,166,0.1)',
-                  1, 'rgba(20,184,166,1)'
-                ]
-              }
+              'paint': { 'line-color': '#14B8A6', 'line-width': 5, 'line-opacity': 0.8 }
             });
           }
         } catch (e) {
-          console.warn("Mapbox Routing failed", e);
+          console.warn("Routing failed", e);
         }
       }
-      mapInstance.fitBounds(bounds, { padding: 40, animate: true });
+      mapInstance.fitBounds(bounds, { padding: 40 });
+      // Final resize safety
+      setTimeout(triggerResize, 500);
     });
   }
 
